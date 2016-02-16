@@ -20,6 +20,7 @@ gem 'slim-rails'
 gem 'bootstrap-sass'
 gem 'simple_form'
 gem 'will_paginate-bootstrap'
+gem 'delayed_job_active_record'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
