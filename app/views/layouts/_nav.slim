@@ -1,0 +1,23 @@
+.navbar.navbar-default.navbar-static-top
+  .container
+    button.navbar-toggle type="button" data-toggle="collapse" data-target=".navbar-responsive-collapse"
+      span.icon-bar
+      span.icon-bar
+      span.icon-bar
+    a.navbar-brand href="#" ReMail
+    .navbar-collapse.collapse.navbar-responsive-collapse
+      ul.nav.navbar-nav
+        li= link_to "Link 1", "/path1"
+        li= link_to "Link 2", "/path2"
+        li= link_to "Link 3", "/path3"
+      ul.nav.navbar-nav.navbar-right.navbar-responsive-collapse
+        li= link_to "Admin", new_administrator_session_path
+
+.container
+  .row
+    .col-lg-9
+      = bootstrap_flash
+      = yield
+
+  footer
+    p &copy; Company #{Date.today.year}
