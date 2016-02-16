@@ -1,0 +1,21 @@
+h1 = "Recepient List: #{@recipient_list.name}"
+
+table.table
+  thead
+    tr
+      th Created at
+      th UUID
+
+  tbody
+    tr
+      td = @recipient_list.created_at
+      td = @recipient_list.uuid
+
+
+.well
+  = simple_form_for([:users, @recipient_list_upload]) do |f|
+    = f.input :csv_data, as: :file
+    = f.input :recipient_list_id, as: :hidden
+    .actions
+      = f.submit
+

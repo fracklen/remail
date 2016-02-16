@@ -19,6 +19,12 @@ class Users::RecipientListsController < CustomerController
     end
   end
 
+  def show
+    @recipient_list = RecipientList.find(params[:id])
+    @recipient_list_upload = RecipientListUpload
+      .new(recipient_list: @recipient_list)
+  end
+
   def destroy
     @recipient_list = RecipientList.find(params[:id])
     @recipient_list.deleted_at = Time.zone.now

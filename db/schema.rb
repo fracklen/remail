@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160216135220) do
+ActiveRecord::Schema.define(version: 20160216141433) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -46,6 +46,18 @@ ActiveRecord::Schema.define(version: 20160216135220) do
   add_index "customers", ["name"], name: "index_customers_on_name", unique: true, using: :btree
   add_index "customers", ["uuid"], name: "index_customers_on_uuid", unique: true, using: :btree
 
+  create_table "recipient_list_uploads", force: :cascade do |t|
+    t.binary   "csv_data"
+    t.integer  "recipient_list_id"
+    t.integer  "created_by_id"
+    t.string   "state"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "recipient_list_uploads", ["created_by_id"], name: "index_recipient_list_uploads_on_created_by_id", using: :btree
+  add_index "recipient_list_uploads", ["recipient_list_id"], name: "index_recipient_list_uploads_on_recipient_list_id", using: :btree
+
   create_table "recipient_lists", force: :cascade do |t|
     t.integer  "customer_id"
     t.uuid     "uuid",        default: "uuid_generate_v4()"
@@ -76,4 +88,5 @@ ActiveRecord::Schema.define(version: 20160216135220) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "recipient_list_uploads", "recipient_lists"
 end
