@@ -9,4 +9,8 @@ Rails.application.routes.draw do
     resources :users
   end
 
+  namespace :users do
+    resources :recipient_lists
+  end
+
 end

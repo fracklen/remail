@@ -1,0 +1,23 @@
+h1 Recipient Lists
+
+table.table
+  thead
+    tr
+      th Name
+      th Actions
+  tbody
+    - @recipient_lists.each do |recipient_list|
+      tr id="recipient-list-#{recipient_list.id}"
+        td = recipient_list.name
+        td
+          = link_to 'Destroy', users_recipient_list_path(recipient_list), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger delete-recipient-list-link', remote: true
+
+
+= will_paginate @recipient_lists
+
+= link_to 'Create List', new_users_recipient_list_path, class: 'btn btn-large btn-success'
+
+javascript:
+  $('.delete-recipient-list-link').bind('ajax:complete', function(event, data) {
+    $('#recipient-list-' + data.responseJSON.id).hide();
+  });
