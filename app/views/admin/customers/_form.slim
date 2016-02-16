@@ -1,0 +1,14 @@
+= simple_form_for([:admin, @customer]) do |f|
+  - if @customer.errors.any?
+    #error_explanation
+      h2 = pluralize(@customer.errors.count, "error")
+        |
+          prohibited this customer from being saved:
+      ul
+        - @customer.errors.full_messages.each do |message|
+          li = message
+
+  = f.input :name, hint: 'Customer Name'
+
+  .actions
+    = f.submit

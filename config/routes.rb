@@ -6,6 +6,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :customers
+    resources :users
   end
 
 end

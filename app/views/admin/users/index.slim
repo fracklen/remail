@@ -1,0 +1,25 @@
+h1 Users
+
+table.table
+  thead
+    tr
+      th Name
+      th Customer
+      th Actions
+  tbody
+    - @users.each do |user|
+      tr id="user-#{user.id}"
+        td = user.name
+        td = user.customer.name
+        td
+          = link_to 'Destroy', admin_user_path(user), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger delete-user-link', remote: true
+
+
+= will_paginate @users
+
+= link_to 'Create User', new_admin_user_path, class: 'btn btn-large btn-success'
+
+javascript:
+  $('.delete-user-link').bind('ajax:complete', function(event, data) {
+    $('#user-' + data.responseJSON.id).hide();
+  });

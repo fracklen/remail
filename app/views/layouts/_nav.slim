@@ -7,11 +7,20 @@
     a.navbar-brand href="#" ReMail
     .navbar-collapse.collapse.navbar-responsive-collapse
       ul.nav.navbar-nav
-        li= link_to "Link 1", "/path1"
-        li= link_to "Link 2", "/path2"
-        li= link_to "Link 3", "/path3"
+        - if current_administrator
+          li = link_to "Customers", "/admin/customers"
+          li = link_to "Users", "/admin/users"
+          li = link_to "Link 3", "/path3"
+        - if current_user
+          li = link_to "Lists", "/lists"
       ul.nav.navbar-nav.navbar-right.navbar-responsive-collapse
-        li= link_to "Admin", new_administrator_session_path
+        - if current_administrator
+          li = link_to "Sign out", destroy_administrator_session_path, method: 'DELETE'
+        - elsif current_user
+          li = link_to "Sign out", destroy_user_session_path, method: 'DELETE'
+        - else
+          li = link_to "Log In", new_user_session_path
+          li = link_to "Admin", new_administrator_session_path
 
 .container
   .row
