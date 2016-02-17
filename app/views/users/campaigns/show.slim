@@ -3,11 +3,18 @@ h1 = "Campaign: #{@campaign.name}"
 table.table
   thead
     tr
-      th Created at
+      th Run id
+      th State
+      th Sent to
+      th Recipients
+      th Progress
 
 
   tbody
-    tr
-      td = @campaign.created_at
-
-
+    - @campaign.campaign_runs.each do |run|
+      tr
+        td = run.id
+        td = run.state
+        td = run.sent
+        td = run.total_recipients
+        td = 100.0 * ((run.sent.to_i) / run.total_recipients.to_f)
