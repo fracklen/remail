@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160217144554) do
+ActiveRecord::Schema.define(version: 20160217152259) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,20 @@ ActiveRecord::Schema.define(version: 20160217144554) do
 
   add_index "administrators", ["email"], name: "index_administrators_on_email", unique: true, using: :btree
   add_index "administrators", ["reset_password_token"], name: "index_administrators_on_reset_password_token", unique: true, using: :btree
+
+  create_table "campaign_runs", force: :cascade do |t|
+    t.integer  "campaign_id"
+    t.uuid     "uuid",             default: "uuid_generate_v4()"
+    t.string   "name"
+    t.datetime "created_at",                                      null: false
+    t.datetime "updated_at",                                      null: false
+    t.string   "state"
+    t.integer  "total_recipients"
+    t.integer  "sent"
+  end
+
+  add_index "campaign_runs", ["campaign_id"], name: "index_campaign_runs_on_campaign_id", using: :btree
+  add_index "campaign_runs", ["uuid"], name: "index_campaign_runs_on_uuid", using: :btree
 
   create_table "campaigns", force: :cascade do |t|
     t.integer  "recipient_list_id"
@@ -131,6 +145,7 @@ ActiveRecord::Schema.define(version: 20160217144554) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "campaign_runs", "campaigns"
   add_foreign_key "campaigns", "customers"
   add_foreign_key "campaigns", "domains"
   add_foreign_key "campaigns", "recipient_lists"

@@ -13,7 +13,9 @@ Rails.application.routes.draw do
     resources :recipient_lists
     resources :recipient_list_uploads
     resources :domains
-    resources :campaigns
+    resources :campaigns do
+      resources :campaign_runs, only: [:create]
+    end
   end
 
 end

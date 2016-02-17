@@ -16,6 +16,8 @@ table.table
         td
           = link_to 'Show', users_campaign_path(campaign), class: 'btn btn-info'
           | &nbsp;
+          = link_to 'Start', users_campaign_campaign_runs_path(campaign), class: 'btn btn-warning', method: :post, remote: true
+          | &nbsp;
           = link_to 'Destroy', users_campaign_path(campaign), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger delete-campaign-link', remote: true
 
 
