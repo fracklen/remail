@@ -15,6 +15,7 @@
           li = link_to "Link 3", "/path3"
         - if current_user
           li = link_to "Lists", "/users/recipient_lists"
+          li = link_to "Domains", "/users/domains"
       ul.nav.navbar-nav.navbar-right.navbar-responsive-collapse
         - if current_administrator
           li = link_to "Sign out", destroy_administrator_session_path, method: 'DELETE'

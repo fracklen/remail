@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160216145905) do
+ActiveRecord::Schema.define(version: 20160217135119) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,17 @@ ActiveRecord::Schema.define(version: 20160216145905) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
 
+  create_table "domains", force: :cascade do |t|
+    t.integer  "customer_id"
+    t.string   "name"
+    t.datetime "deleted_at"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "domains", ["customer_id", "name", "deleted_at"], name: "index_domains_on_customer_id_and_name_and_deleted_at", unique: true, using: :btree
+  add_index "domains", ["customer_id"], name: "index_domains_on_customer_id", using: :btree
+
   create_table "recipient_list_uploads", force: :cascade do |t|
     t.binary   "csv_data"
     t.integer  "recipient_list_id"
@@ -104,5 +115,6 @@ ActiveRecord::Schema.define(version: 20160216145905) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "domains", "customers"
   add_foreign_key "recipient_list_uploads", "recipient_lists"
 end

@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   namespace :users do
     resources :recipient_lists
     resources :recipient_list_uploads
+    resources :domains
   end
 
 end

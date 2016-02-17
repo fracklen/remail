@@ -1,0 +1,25 @@
+h1 Domains
+
+table.table
+  thead
+    tr
+      th Name
+      th Actions
+  tbody
+    - @domains.each do |domain|
+      tr id="domain-#{domain.id}"
+        td = domain.name
+        td
+          = link_to 'Show', users_domain_path(domain), class: 'btn btn-info'
+          | &nbsp;
+          = link_to 'Destroy', users_domain_path(domain), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger delete-domain-link', remote: true
+
+
+= will_paginate @domains
+
+= link_to 'Create List', new_users_domain_path, class: 'btn btn-large btn-success'
+
+javascript:
+  $('.delete-domain-link').bind('ajax:complete', function(event, data) {
+    $('#domain-' + data.responseJSON.id).hide();
+  });
