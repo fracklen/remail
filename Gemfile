@@ -21,10 +21,12 @@ gem 'bootstrap-sass'
 gem 'simple_form'
 gem 'will_paginate-bootstrap'
 gem 'delayed_job_active_record'
+gem 'elasticsearch'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
+  gem 'faker'
 end
 
 group :development do

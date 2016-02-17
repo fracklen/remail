@@ -5,11 +5,13 @@ table.table
     tr
       th Created at
       th UUID
+      th Recipients
 
   tbody
     tr
       td = @recipient_list.created_at
       td = @recipient_list.uuid
+      td = @recipient_list_service.count[@recipient_list.uuid]
 
 
 .well

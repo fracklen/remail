@@ -1,4 +1,6 @@
 class Users::RecipientListsController < CustomerController
+  before_action :list_recipients, only: [:index, :show]
+
   def index
     @recipient_lists = RecipientList
       .where(deleted_at: nil)
@@ -36,6 +38,10 @@ class Users::RecipientListsController < CustomerController
 
   def recipient_list_params
     params.require(:recipient_list).permit(:name).merge(customer)
+  end
+
+  def list_recipients
+    @recipient_list_service = RecipientListService.new(current_user.customer)
   end
 
   def customer

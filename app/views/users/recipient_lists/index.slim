@@ -4,11 +4,13 @@ table.table
   thead
     tr
       th Name
+      th Recipients
       th Actions
   tbody
     - @recipient_lists.each do |recipient_list|
       tr id="recipient-list-#{recipient_list.id}"
         td = recipient_list.name
+        td = @recipient_list_service.count[recipient_list.uuid]
         td
           = link_to 'Show', users_recipient_list_path(recipient_list), class: 'btn btn-info'
           | &nbsp;

@@ -8,6 +8,8 @@
     .navbar-collapse.collapse.navbar-responsive-collapse
       ul.nav.navbar-nav
         - if current_administrator
+          li
+            a.glyphicon.glyphicon-asterisk style="color: #{cluster_health};"
           li = link_to "Customers", "/admin/customers"
           li = link_to "Users", "/admin/users"
           li = link_to "Link 3", "/path3"

@@ -4,6 +4,7 @@ class Users::RecipientListUploadsController < CustomerController
     @upload.csv_data = upload.read
     @state = 'READY'
     if @upload.save
+      RecipientUploadProcessor.process_delayed(@upload)
       redirect_to users_recipient_lists_path, notice: 'Upload complete. Processing...'
     else
       render :new
