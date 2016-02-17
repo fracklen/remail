@@ -1,0 +1,19 @@
+= simple_form_for([:users, @campaign]) do |f|
+  - if @campaign.errors.any?
+    #error_explanation
+      h2 = pluralize(@campaign.errors.count, "error")
+        |
+          prohibited this recipient list from being saved:
+      ul
+        - @campaign.errors.full_messages.each do |message|
+          li = message
+
+  = f.input :name
+  = f.input :recipient_list_id, collection: @recipient_lists.map {|c| [c.name, c.id] }, selected: @campaign.recipient_list_id, prompt: 'Select Recipients'
+  = f.input :domain_id, collection: @domains.map {|c| [c.name, c.id] }, selected: @campaign.domain_id, prompt: 'Select Domain'
+
+
+  br
+
+  .actions
+    = f.submit

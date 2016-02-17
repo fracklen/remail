@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     resources :recipient_lists
     resources :recipient_list_uploads
     resources :domains
+    resources :campaigns
   end
 
 end

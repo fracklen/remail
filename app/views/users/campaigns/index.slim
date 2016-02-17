@@ -1,0 +1,29 @@
+h1 Campaigns
+
+table.table
+  thead
+    tr
+      th Name
+      th Domain
+      th Recipients
+      th Actions
+  tbody
+    - @campaigns.each do |campaign|
+      tr id="campaign-#{campaign.id}"
+        td = campaign.name
+        td = campaign.domain.name
+        td = campaign.recipient_list.name
+        td
+          = link_to 'Show', users_campaign_path(campaign), class: 'btn btn-info'
+          | &nbsp;
+          = link_to 'Destroy', users_campaign_path(campaign), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger delete-campaign-link', remote: true
+
+
+= will_paginate @campaigns
+
+= link_to 'Create List', new_users_campaign_path, class: 'btn btn-large btn-success'
+
+javascript:
+  $('.delete-campaign-link').bind('ajax:complete', function(event, data) {
+    $('#campaign-' + data.responseJSON.id).hide();
+  });

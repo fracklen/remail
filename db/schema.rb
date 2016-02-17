@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160217135119) do
+ActiveRecord::Schema.define(version: 20160217144554) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,22 @@ ActiveRecord::Schema.define(version: 20160217135119) do
 
   add_index "administrators", ["email"], name: "index_administrators_on_email", unique: true, using: :btree
   add_index "administrators", ["reset_password_token"], name: "index_administrators_on_reset_password_token", unique: true, using: :btree
+
+  create_table "campaigns", force: :cascade do |t|
+    t.integer  "recipient_list_id"
+    t.integer  "customer_id"
+    t.integer  "domain_id"
+    t.string   "name"
+    t.uuid     "uuid",              default: "uuid_generate_v4()"
+    t.datetime "deleted_at"
+    t.datetime "created_at",                                       null: false
+    t.datetime "updated_at",                                       null: false
+  end
+
+  add_index "campaigns", ["customer_id"], name: "index_campaigns_on_customer_id", using: :btree
+  add_index "campaigns", ["domain_id"], name: "index_campaigns_on_domain_id", using: :btree
+  add_index "campaigns", ["recipient_list_id"], name: "index_campaigns_on_recipient_list_id", using: :btree
+  add_index "campaigns", ["uuid"], name: "index_campaigns_on_uuid", using: :btree
 
   create_table "customers", force: :cascade do |t|
     t.string   "name"
@@ -115,6 +131,9 @@ ActiveRecord::Schema.define(version: 20160217135119) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "campaigns", "customers"
+  add_foreign_key "campaigns", "domains"
+  add_foreign_key "campaigns", "recipient_lists"
   add_foreign_key "domains", "customers"
   add_foreign_key "recipient_list_uploads", "recipient_lists"
 end
