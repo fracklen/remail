@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160217152259) do
+ActiveRecord::Schema.define(version: 20160218084813) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -124,6 +124,19 @@ ActiveRecord::Schema.define(version: 20160217152259) do
     t.datetime "updated_at",                                 null: false
   end
 
+  create_table "templates", force: :cascade do |t|
+    t.integer  "customer_id"
+    t.string   "name"
+    t.string   "subject"
+    t.text     "body"
+    t.datetime "deleted_at"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.text     "example_recipient"
+  end
+
+  add_index "templates", ["customer_id"], name: "index_templates_on_customer_id", using: :btree
+
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
     t.string   "encrypted_password",     default: "", null: false
@@ -151,4 +164,5 @@ ActiveRecord::Schema.define(version: 20160217152259) do
   add_foreign_key "campaigns", "recipient_lists"
   add_foreign_key "domains", "customers"
   add_foreign_key "recipient_list_uploads", "recipient_lists"
+  add_foreign_key "templates", "customers"
 end

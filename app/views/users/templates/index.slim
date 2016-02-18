@@ -1,0 +1,27 @@
+h1 Templates
+
+table.table
+  thead
+    tr
+      th Name
+      th Subject
+      th Actions
+  tbody
+    - @templates.each do |template|
+      tr id="template-#{template.id}"
+        td = template.name
+        td = template.subject
+        td
+          = link_to 'Edit', users_template_path(template), class: 'btn btn-info'
+          | &nbsp;
+          = link_to 'Destroy', users_template_path(template), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger delete-template-link', remote: true
+
+
+= will_paginate @templates
+
+= link_to 'Create List', new_users_template_path, class: 'btn btn-large btn-success'
+
+javascript:
+  $('.delete-template-link').bind('ajax:complete', function(event, data) {
+    $('#template-' + data.responseJSON.id).hide();
+  });

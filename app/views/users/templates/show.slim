@@ -1,0 +1,11 @@
+= render 'form'
+
+h2 Preview
+
+.well
+  iframe#preview style="width: 100%; height: 600px;"
+
+javascript:
+  $(function(){
+    $('#preview').attr('src', "#{preview_users_template_path(@template.id)}");
+  });
