@@ -20,13 +20,14 @@ class CampaignRunner
 
     count = 0
     iterator.find_each do |recipient|
-      send_mail(recipient)
+      mailer.send_mail(recipient)
 
       count += 1
-      update_state(count) if count % (total_recipients / 100) == 0
+      update_state(count) if count % (total_recipients / 1000) == 0
     end
-
     update_state_end(count)
+  ensure
+    mailer.finish
   end
 
   def update_state(count)
@@ -47,12 +48,8 @@ class CampaignRunner
     )
   end
 
-  def send_mail(recipient)
-    puts recipient['email']
-  end
-
-  def renderer
-    @renderer ||= TemplateRenderer.new(campaign_run.campaign.template)
+  def mailer
+    @mailer ||= PersistentMailer.new(campaign_run)
   end
 
   def iterator

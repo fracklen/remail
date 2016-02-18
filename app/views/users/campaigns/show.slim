@@ -17,4 +17,4 @@ table.table
         td = run.state
         td = run.sent
         td = run.total_recipients
-        td = 100.0 * ((run.sent.to_i) / run.total_recipients.to_f)
+        td = (100.0 * ((run.sent.to_i) / run.total_recipients.to_f)).round(1)
