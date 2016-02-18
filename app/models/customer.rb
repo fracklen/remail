@@ -3,4 +3,5 @@ class Customer < ActiveRecord::Base
   has_many :recipient_lists
   has_many :domains
   has_many :campaigns
+  has_many :templates
 end

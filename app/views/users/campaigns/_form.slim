@@ -11,6 +11,7 @@
   = f.input :name
   = f.input :recipient_list_id, collection: @recipient_lists.map {|c| [c.name, c.id] }, selected: @campaign.recipient_list_id, prompt: 'Select Recipients'
   = f.input :domain_id, collection: @domains.map {|c| [c.name, c.id] }, selected: @campaign.domain_id, prompt: 'Select Domain'
+  = f.input :template_id, collection: @templates.map {|c| [c.name, c.id] }, selected: @campaign.template_id, prompt: 'Select Template'
 
 
   br

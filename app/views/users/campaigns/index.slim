@@ -6,6 +6,7 @@ table.table
       th Name
       th Domain
       th Recipients
+      th Template
       th Actions
   tbody
     - @campaigns.each do |campaign|
@@ -13,6 +14,8 @@ table.table
         td = campaign.name
         td = campaign.domain.name
         td = campaign.recipient_list.name
+        td = campaign.template.name
+
         td
           = link_to 'Show', users_campaign_path(campaign), class: 'btn btn-info'
           | &nbsp;

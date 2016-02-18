@@ -23,6 +23,7 @@ class Users::CampaignsController < CustomerController
 
   def show
     @campaign = Campaign.find(params[:id])
+    @runs = @campaign.campaign_runs.order(:id, :state)
   end
 
   def destroy
@@ -38,7 +39,8 @@ class Users::CampaignsController < CustomerController
     params.require(:campaign).permit(
       :name,
       :recipient_list_id,
-      :domain_id
+      :domain_id,
+      :template_id
     ).merge(customer)
   end
 
@@ -51,5 +53,6 @@ class Users::CampaignsController < CustomerController
   def set_dependencies
     @recipient_lists = current_user.customer.recipient_lists.active
     @domains = current_user.customer.domains.active
+    @templates = current_user.customer.templates
   end
 end

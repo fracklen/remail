@@ -17,8 +17,20 @@ class CampaignRunner
 
   def start
     update_state_start
-    # TODO: do stuff
-    update_state_end
+
+    count = 0
+    iterator.find_each do |recipient|
+      send_mail(recipient)
+
+      count += 1
+      update_state(count) if count % (total_recipients / 100) == 0
+    end
+
+    update_state_end(count)
+  end
+
+  def update_state(count)
+    @campaign_run.update_attributes(sent: count)
   end
 
   def update_state_start
@@ -28,15 +40,27 @@ class CampaignRunner
     @campaign_run.save
   end
 
-  def update_state_end
-    @campaign_run.state            = 'FINISHED'
-    @campaign_run.sent             = total_recipients
-    @campaign_run.total_recipients = total_recipients
-    @campaign_run.save
+  def update_state_end(count)
+    @campaign_run.update_attributes(
+      state: 'FINISHED',
+      sent: count
+    )
+  end
+
+  def send_mail(recipient)
+    puts recipient['email']
+  end
+
+  def renderer
+    @renderer ||= TemplateRenderer.new(campaign_run.campaign.template)
+  end
+
+  def iterator
+    @iterator ||= RecipientIterator.new(recipient_list)
   end
 
   def total_recipients
-    recipient_list_service.count[recipient_list.uuid]
+    @total_recipients ||= recipient_list_service.count[recipient_list.uuid]
   end
 
   def recipient_list_service
