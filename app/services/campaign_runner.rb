@@ -18,34 +18,55 @@ class CampaignRunner
   def start
     update_state_start
 
-    count = 0
-    iterator.find_each do |recipient|
-      mailer.send_mail(recipient)
+    processed = campaign_run.processed
+    sent = campaign_run.sent
+    rejected = campaign_run.rejected
 
-      count += 1
-      update_state(count) if count % (total_recipients / 1000) == 0
+    iterator.find_each do |recipient|
+      begin
+        mailer.send_mail(recipient)
+        sent += 1
+      rescue => e
+        Rails.logger.error(e.message)
+        rejected += 1
+      end
+
+      processed += 1
+      update_state(processed, sent, rejected)
     end
-    update_state_end(count)
+    update_state_end(processed)
+  rescue => e
+    update_error(e)
   ensure
     mailer.finish
   end
 
-  def update_state(count)
-    @campaign_run.update_attributes(sent: count)
+  def update_state(processed, sent, rejected)
+    # Save the database...
+    return unless processed % (total_recipients / 1000) == 0
+
+    @campaign_run.update_attributes(
+      processed: processed,
+      sent:      sent,
+      rejected:  rejected
+    )
   end
 
   def update_state_start
     @campaign_run.state            = 'STARTED'
-    @campaign_run.sent             = 0
     @campaign_run.total_recipients = total_recipients
     @campaign_run.save
   end
 
-  def update_state_end(count)
+  def update_state_end(processed)
     @campaign_run.update_attributes(
-      state: 'FINISHED',
-      sent: count
+      state: 'FINISHED'
     )
+  end
+
+  def update_error(e)
+    @campaign_run.state      = 'ERROR'
+    @campaign_run.last_error = "#{e.message}\n#{e.backtrace}"
   end
 
   def mailer

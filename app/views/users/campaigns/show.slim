@@ -5,16 +5,76 @@ table.table
     tr
       th Run id
       th State
+      th Processed
       th Sent to
+      th Rejected
       th Recipients
       th Progress
-
+      th Success
+      th Actions
 
   tbody
     - @runs.each do |run|
-      tr
+      tr.campaign-run id="campaign-run-#{run.id}" data-id="#{run.id}"
         td = run.id
-        td = run.state
+        td.state = run.state
+        td = run.processed
         td = run.sent
+        td = run.rejected
         td = run.total_recipients
-        td = (100.0 * ((run.sent.to_i) / run.total_recipients.to_f)).round(1)
+        td
+          progress max="100" value="#{run.progress_pct}"
+          | &nbsp;
+          = run.progress_pct
+
+        td
+          progress max="100" value="#{run.success_rate}"
+          | &nbsp;
+          = run.success_rate
+
+        td
+          - if run.state == 'STARTED' || run.state == 'PENDING'
+            = link_to 'Cancel', cancel_users_campaign_campaign_run_path(campaign_id: run.campaign.id, id: run.id), class: 'btn btn-danger campaign-run-action', method: :post, remote: true
+            | &nbsp;
+            = link_to 'Stop', stop_users_campaign_campaign_run_path(campaign_id: run.campaign.id, id: run.id), class: 'btn btn-warning campaign-run-action', method: :post, remote: true
+          - if run.state == 'STOPPED' || run.state == 'CANCELLED' || run.state == 'ERROR' || run.state == 'FINISHED'
+            = link_to 'Delete', users_campaign_campaign_run_path(campaign_id: run.campaign.id, id: run.id), class: 'btn btn-danger campaign-run-action', method: :delete, remote: true
+
+javascript:
+  $(function(){
+    $('.campaign-run-action').bind('ajax:complete', function(event, data) {
+      var elem = $('#campaign-run-' + data.responseJSON.id)
+      var action = data.responseJSON.action;
+
+      switch(action) {
+        case 'delete':
+          elem.hide();
+          break;
+        case 'state_updated':
+          elem.children('.state').html(data.responseJSON.new_state);
+          elem.children('td .campaign-run-action').hide()
+          break;
+      }
+    });
+  });
+
+  function update_run_data(event, data){
+    console.log($('#campaign-run-'+data.responseJSON.id))
+  }
+
+  function update_runs(){
+    $('.campaign-run').each(function(i, elem){
+      var state = $(elem).children('.state').html();
+      var id = $(elem).data('id');
+      if (state === 'STARTED') {
+        $.ajax('#{users_campaign_path}/'+id, {
+          success: update_run_data
+        }
+        );
+      }
+    });
+  }
+
+  $(function(){
+    setInterval(update_runs, 1000);
+  });

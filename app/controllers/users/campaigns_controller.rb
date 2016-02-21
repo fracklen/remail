@@ -3,8 +3,7 @@ class Users::CampaignsController < CustomerController
 
   def index
     @campaigns = Campaign
-      .where(deleted_at: nil)
-      .all
+      .visible
       .paginate(page: params[:page])
   end
 
@@ -23,7 +22,13 @@ class Users::CampaignsController < CustomerController
 
   def show
     @campaign = Campaign.find(params[:id])
-    @runs = @campaign.campaign_runs.order(:id, :state)
+    @runs = @campaign.campaign_runs.visible.order(:id, :state)
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: @runs.to_json
+      end
+    end
   end
 
   def destroy

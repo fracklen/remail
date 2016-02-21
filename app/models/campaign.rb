@@ -9,4 +9,6 @@ class Campaign < ActiveRecord::Base
   validates :customer, presence: true
   validates :domain, presence: true
   validates :template, presence: true
+
+  scope :visible, -> { where(deleted_at: nil) }
 end

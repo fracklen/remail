@@ -19,7 +19,13 @@ Rails.application.routes.draw do
       end
     end
     resources :campaigns do
-      resources :campaign_runs, only: [:create]
+      resources :campaign_runs, only: [:create, :destroy] do
+        member do
+          post 'resume'
+          post 'cancel'
+          post 'stop'
+        end
+      end
     end
   end
 
