@@ -23,7 +23,7 @@ gem 'will_paginate-bootstrap'
 gem 'delayed_job_active_record'
 gem 'elasticsearch'
 gem 'liquid'
-
+gem 'sidekiq'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

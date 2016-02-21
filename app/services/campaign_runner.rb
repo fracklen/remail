@@ -3,11 +3,7 @@ class CampaignRunner
 
   class << self
     def schedule(campaign_run)
-      delay.start(campaign_run.id)
-    end
-
-    def start(campaign_run_id)
-      new(CampaignRun.find(campaign_run_id)).start
+      CampaignWorker.perform_async(campaign_run.id)
     end
   end
 

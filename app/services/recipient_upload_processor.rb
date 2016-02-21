@@ -8,11 +8,7 @@ class RecipientUploadProcessor
 
   class << self
     def process_delayed(upload)
-      delay.process_id(upload.id)
-    end
-
-    def process_id(upload_id)
-      new(RecipientListUpload.find(upload_id)).process
+      CsvImportWorker.perform_async(upload.id)
     end
   end
 
