@@ -2,7 +2,7 @@ class PersistentMailer
 
   attr_reader :campaign_run
 
-  SMTP_SESSION_MAX = 100
+  SMTP_SESSION_MAX = 1000
 
   def initialize(campaign_run)
     @campaign_run = campaign_run
@@ -20,7 +20,6 @@ class PersistentMailer
 
   def deliver(id, recipient, rendered, try_again = true)
     msg_id = gen_message_id(recipient)
-    campaign
     mail = Mail.new
     mail.to         = recipient['email']
     mail.from       = campaign.from_email
@@ -41,7 +40,7 @@ class PersistentMailer
     raise unless try_again
   rescue Net::SMTPServerBusy, TimeoutError
     @smtp_session = nil
-    sleep(3)
+    sleep 1
     conditional_reconnect
     deliver(recipient, redered, !try_again) if try_again
     raise unless try_again
@@ -50,10 +49,11 @@ class PersistentMailer
   end
 
   def gen_message_id(recipient)
-    SecureRandom.hex
+    "#{SecureRandom.hex}@#{domain.name}"
   end
 
   def finish
+    @delivery_buffer.future.flush.value
     @delivery_buffer.terminate
     @smtp_session.finish if @smtp_session
   end
@@ -67,7 +67,7 @@ class PersistentMailer
   end
 
   def domain
-    @domain ||= @campaign.domain
+    @domain ||= campaign.domain
   end
 
   def conditional_reconnect

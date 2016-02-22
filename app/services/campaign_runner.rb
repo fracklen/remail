@@ -63,7 +63,7 @@ class CampaignRunner
 
   def update_error(e)
     @campaign_run.state      = 'ERROR'
-    @campaign_run.last_error = "#{e.message}\n#{e.backtrace}"
+    @campaign_run.last_error = "#{e.message}\n#{e.backtrace.join("\n")}"
   end
 
   def mailer
