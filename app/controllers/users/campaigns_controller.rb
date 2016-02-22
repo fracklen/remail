@@ -45,6 +45,8 @@ class Users::CampaignsController < CustomerController
       :name,
       :recipient_list_id,
       :domain_id,
+      :reply_to_email,
+      :from_email,
       :template_id
     ).merge(customer)
   end

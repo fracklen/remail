@@ -18,12 +18,13 @@ class CampaignRunner
     sent = campaign_run.sent
     rejected = campaign_run.rejected
 
-    iterator.find_each do |recipient|
+    iterator.find_each do |id, recipient|
       begin
-        mailer.send_mail(recipient)
+        mailer.send_mail(id, recipient)
         sent += 1
       rescue => e
         Rails.logger.error(e.message)
+        Rails.logger.error(e.backtrace.join("\n"))
         rejected += 1
       end
 

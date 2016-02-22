@@ -11,7 +11,7 @@ class RecipientIterator
     results = process_results
     while results.any?
       results.each do |recipient|
-        yield recipient['_source']
+        yield(recipient['_id'], recipient['_source'])
       end
       results = process_results
     end

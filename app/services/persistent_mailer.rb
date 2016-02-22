@@ -8,30 +8,53 @@ class PersistentMailer
     @campaign_run = campaign_run
     @smtp_session = nil
     @smtp_session_count = 0
+    @delivery_buffer = DeliveryBuffer.new(campaign_run)
   end
 
-  def send_mail(recipient)
+  def send_mail(id, recipient)
     conditional_reconnect
     rendered = renderer.render(recipient)
-    deliver(recipient, rendered)
+    deliver(id, recipient, rendered)
     @smtp_session_count += 1
   end
 
-  def deliver(recipient, rendered)
-    mail = Mail.new do
-      to recipient['email']
-      from 'foobar@net.net'
-      subject rendered[:subject]
-      body rendered[:body]
-    end
+  def deliver(id, recipient, rendered, try_again = true)
+    msg_id = gen_message_id(recipient)
+    campaign
+    mail = Mail.new
+    mail.to         = recipient['email']
+    mail.from       = campaign.from_email
+    mail.reply_to   = campaign.reply_to_email
+    mail.subject    = rendered[:subject]
+    mail.body       = rendered[:body]
+    mail.message_id = msg_id
 
     @smtp_session.sendmail(mail.encoded,
       mail.smtp_envelope_from,
       mail.smtp_envelope_to
     )
+    @delivery_buffer.async.push(id, recipient, mail)
+  rescue IOError, Net::SMTPUnknownError
+    @smtp_session = nil
+    conditional_reconnect
+    deliver(recipient, redered, !try_again) if try_again
+    raise unless try_again
+  rescue Net::SMTPServerBusy, TimeoutError
+    @smtp_session = nil
+    sleep(3)
+    conditional_reconnect
+    deliver(recipient, redered, !try_again) if try_again
+    raise unless try_again
+  rescue Net::SMTPAuthenticationError
+    raise
+  end
+
+  def gen_message_id(recipient)
+    SecureRandom.hex
   end
 
   def finish
+    @delivery_buffer.terminate
     @smtp_session.finish if @smtp_session
   end
 
@@ -39,14 +62,18 @@ class PersistentMailer
     @renderer ||= TemplateRenderer.new(campaign_run.campaign.template)
   end
 
+  def campaign
+    @campaign ||= campaign_run.campaign
+  end
+
+  def domain
+    @domain ||= @campaign.domain
+  end
+
   def conditional_reconnect
     if @smtp_session_count > SMTP_SESSION_MAX || @smtp_session.nil?
       @smtp_session.finish if @smtp_session
-      smtp = Net::SMTP.start('localhost', 1025, 'net.test.com')
-      Mail.defaults do
-        delivery_method :smtp_connection, connection: smtp
-      end
-      @smtp_session = smtp
+      @smtp_session = Net::SMTP.start('localhost', 1025, 'net.test.com')
       @smtp_session_count = 0
     end
   end
