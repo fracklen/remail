@@ -2,9 +2,12 @@ require 'elasticsearch'
 
 namespace :elastic do
   desc "Set up indexes"
-  task setup: [:recipients, :deliveries, :link_trackers] do
-
-  end
+  task setup: [
+    :recipients,
+    :deliveries,
+    :link_trackers,
+    :click_events
+  ]
 
   task :recipients do
     client.indices.create(
@@ -211,6 +214,101 @@ namespace :elastic do
             },
 
             link_to: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            }
+          }
+        }
+      }
+    )
+  end
+
+  task :click_events do
+    client.indices.create(
+      index: 'events_v1',
+      body: {
+        settings: {
+          index: {
+            number_of_shards: 91,
+            number_of_replicas: 1
+          }
+        }
+      }
+    ) unless client.indices.exists?(index: 'events_v1')
+
+    client.indices.put_alias(
+      index: 'events_v1',
+      name:  'events'
+    )
+
+    client.indices.put_mapping(
+      index: 'events_v1',
+      type:  'click',
+      body: {
+        click: {
+          properties: {
+            _rev:       { type: :string },
+
+            created_at: {
+              type: :date,
+              format: :dateOptionalTime
+            },
+
+            message_id: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            recipient_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            recipient_list_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            customer_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            campaign_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            campaign_run_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            link_to: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            user_agent: {
+              type: :string
+            },
+            ip: {
               type: :string,
               fields: {
                 raw: { type: :string, index: :not_analyzed }
