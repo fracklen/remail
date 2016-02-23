@@ -2,7 +2,7 @@ require 'elasticsearch'
 
 namespace :elastic do
   desc "Set up indexes"
-  task setup: [:recipients, :deliveries] do
+  task setup: [:recipients, :deliveries, :link_trackers] do
 
   end
 
@@ -137,6 +137,90 @@ namespace :elastic do
     )
   end
 
+  task :link_trackers do
+    client.indices.create(
+      index: 'trackers_v1',
+      body: {
+        settings: {
+          index: {
+            number_of_shards: 91,
+            number_of_replicas: 1
+          }
+        }
+      }
+    ) unless client.indices.exists?(index: 'trackers_v1')
+
+    client.indices.put_alias(
+      index: 'trackers_v1',
+      name:  'trackers'
+    )
+
+    client.indices.put_mapping(
+      index: 'trackers_v1',
+      type:  'link',
+      body: {
+        link: {
+          properties: {
+            _rev:       { type: :string },
+
+            created_at: {
+              type: :date,
+              format: :dateOptionalTime
+            },
+
+            message_id: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            recipient_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            recipient_list_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            customer_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            campaign_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            campaign_run_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            link_to: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            }
+          }
+        }
+      }
+    )
+  end
 
   def client
     @client ||= Elasticsearch::Client.new log: true
