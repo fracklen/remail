@@ -321,7 +321,7 @@ namespace :elastic do
   end
 
   def client
-    @client ||= Elasticsearch::Client.new log: true
+    @client ||= Elasticsearch::Client.new log: false
   end
 
   def url

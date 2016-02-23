@@ -23,7 +23,6 @@ class LinkTrackerStorageBuffer
   end
 
   def flush
-
     client.bulk(body: @buffer) if @buffer.any?
     @buffer.clear
   rescue => e

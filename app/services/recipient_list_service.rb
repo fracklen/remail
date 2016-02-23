@@ -39,7 +39,7 @@ class RecipientListService
 
   def client
     return @client if @client
-    @client = ::Elasticsearch::Client.new log: true
+    @client = ::Elasticsearch::Client.new log: false
     @client.transport.reload_connections!
     @client
   end

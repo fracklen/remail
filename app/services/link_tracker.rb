@@ -35,8 +35,7 @@ class LinkTracker
   end
 
   def tracker_cname
-    # TODO: Take from domain
-    "http://remail.dev"
+    @cname ||= "http://#{campaign.domain.name}"
   end
 
   def customer_uuid

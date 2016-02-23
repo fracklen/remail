@@ -20,12 +20,7 @@ class LinkClickService
   end
 
   def record_event
-    client.index(
-      index: 'events',
-      type:  'click',
-      id:    SecureRandom.hex,
-      body:  event_data
-    )
+    EventStorageWorker.perform_async('click', event_data)
   end
 
   def event_data
@@ -49,7 +44,7 @@ class LinkClickService
 
   def client
     return @client if @client
-    @client = ::Elasticsearch::Client.new log: Rails.logger
+    @client = ::Elasticsearch::Client.new log: false
     @client.transport.reload_connections!
     @client
   end
