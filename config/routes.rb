@@ -9,6 +9,8 @@ Rails.application.routes.draw do
     resources :users
   end
 
+  resources :links, only: [:show]
+
   namespace :users do
     resources :recipient_lists
     resources :recipient_list_uploads

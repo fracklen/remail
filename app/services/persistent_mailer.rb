@@ -28,8 +28,17 @@ class PersistentMailer
     mail.from       = campaign.from_email
     mail.reply_to   = campaign.reply_to_email
     mail.subject    = rendered[:subject]
-    mail.body       = rendered[:body]
     mail.message_id = msg_id
+
+    mail.text_part do
+      content_type 'text/plain; charset=UTF-8'
+      body ActionView::Base.full_sanitizer.sanitize(rendered[:body])
+    end
+
+    mail.html_part do
+      content_type 'text/html; charset=UTF-8'
+      body rendered[:body]
+    end
 
     @smtp_session.sendmail(mail.encoded,
       mail.smtp_envelope_from,
