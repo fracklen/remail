@@ -10,6 +10,7 @@ class PersistentMailer
     @smtp_session_count = 0
     @delivery_buffer = DeliveryBuffer.new(campaign_run)
     @link_tracker = LinkTracker.new(campaign_run)
+    @pixel_tracker = PixelTracker.new(campaign_run)
   end
 
   def send_mail(id, recipient)
@@ -22,6 +23,7 @@ class PersistentMailer
   def deliver(id, recipient, rendered, try_again = true)
     msg_id = gen_message_id(recipient)
     rendered = @link_tracker.track_links(rendered, id, recipient, msg_id)
+    rendered = @pixel_tracker.track_opens(rendered, msg_id)
 
     mail = Mail.new
     mail.to         = recipient['email']

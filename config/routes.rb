@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   end
 
   resources :links, only: [:show]
+  get 'pixels/*id', to: 'pixels#show', constraints: { id: /[^\/]+/ }
 
   namespace :users do
     resources :recipient_lists
