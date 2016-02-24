@@ -43,11 +43,20 @@ class Users::TemplatesController < CustomerController
     @template = Template.find(params[:id])
     response.headers['Content-Type'] = 'text/html'
     render text: TemplateRenderer
-      .new(@template)
-      .render(@template.example_data)[:body]
+      .new(@template, domain)
+      .render(
+        {
+          'custom_data' => @template.example_data
+        },
+        test_id
+      )[:body]
   end
 
   private
+
+  def test_id
+    "#{SecureRandom.hex}@#{domain}"
+  end
 
   def template_params
     params.require(:template).permit(
@@ -62,5 +71,9 @@ class Users::TemplatesController < CustomerController
     {
       customer_id: current_user.customer_id
     }
+  end
+
+  def domain
+    current_user.customer.domains.last.name
   end
 end

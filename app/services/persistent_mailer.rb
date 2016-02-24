@@ -8,23 +8,42 @@ class PersistentMailer
     @campaign_run = campaign_run
     @smtp_session = nil
     @smtp_session_count = 0
-    @delivery_buffer = DeliveryBuffer.new(campaign_run)
-    @link_tracker = LinkTracker.new(campaign_run)
-    @pixel_tracker = PixelTracker.new(campaign_run)
   end
 
   def send_mail(id, recipient)
     conditional_reconnect
-    rendered = renderer.render(recipient)
-    deliver(id, recipient, rendered)
+    msg_id = gen_message_id(recipient)
+    rendered = renderer.render(recipient, msg_id)
+    deliver(id, msg_id, recipient, rendered)
     @smtp_session_count += 1
   end
 
-  def deliver(id, recipient, rendered, try_again = true)
-    msg_id = gen_message_id(recipient)
-    rendered = @link_tracker.track_links(rendered, id, recipient, msg_id)
-    rendered = @pixel_tracker.track_opens(rendered, msg_id)
+  def deliver(id, msg_id, recipient, rendered, try_again = true)
+    rendered = link_tracker.track_links(rendered, id, msg_id)
+    rendered = pixel_tracker.track_opens(rendered, msg_id)
+    mail = create_mail(recipient, rendered, msg_id)
 
+    @smtp_session.sendmail(mail.encoded,
+      mail.smtp_envelope_from,
+      mail.smtp_envelope_to
+    )
+    delivery_buffer.async.push(id, recipient, mail)
+  rescue IOError, Net::SMTPUnknownError
+    @smtp_session = nil
+    conditional_reconnect
+    deliver(recipient, rendered, !try_again) if try_again
+    raise unless try_again
+  rescue Net::SMTPServerBusy, TimeoutError
+    @smtp_session = nil
+    sleep 1
+    conditional_reconnect
+    deliver(recipient, rendered, !try_again) if try_again
+    raise unless try_again
+  rescue Net::SMTPAuthenticationError
+    raise
+  end
+
+  def create_mail(recipient, rendered, msg_id)
     mail = Mail.new
     mail.to         = recipient['email']
     mail.from       = campaign.from_email
@@ -41,25 +60,7 @@ class PersistentMailer
       content_type 'text/html; charset=UTF-8'
       body rendered[:body]
     end
-
-    @smtp_session.sendmail(mail.encoded,
-      mail.smtp_envelope_from,
-      mail.smtp_envelope_to
-    )
-    @delivery_buffer.async.push(id, recipient, mail)
-  rescue IOError, Net::SMTPUnknownError
-    @smtp_session = nil
-    conditional_reconnect
-    deliver(recipient, redered, !try_again) if try_again
-    raise unless try_again
-  rescue Net::SMTPServerBusy, TimeoutError
-    @smtp_session = nil
-    sleep 1
-    conditional_reconnect
-    deliver(recipient, redered, !try_again) if try_again
-    raise unless try_again
-  rescue Net::SMTPAuthenticationError
-    raise
+    mail
   end
 
   def gen_message_id(recipient)
@@ -67,14 +68,18 @@ class PersistentMailer
   end
 
   def finish
-    @delivery_buffer.future.flush.value
-    @delivery_buffer.terminate
-    @link_tracker.flush
+    delivery_buffer.future.flush.value
+    delivery_buffer.terminate
+    link_tracker.flush
+    link_tracker.finish
     @smtp_session.finish if @smtp_session
   end
 
   def renderer
-    @renderer ||= TemplateRenderer.new(campaign_run.campaign.template)
+    @renderer ||= TemplateRenderer.new(
+      campaign_run.campaign.template,
+      campaign_run.campaign.domain.name
+    )
   end
 
   def campaign
@@ -83,6 +88,18 @@ class PersistentMailer
 
   def domain
     @domain ||= campaign.domain
+  end
+
+  def delivery_buffer
+    @delivery_buffer ||= DeliveryBuffer.new(campaign_run)
+  end
+
+  def link_tracker
+    @link_tracker ||= LinkTracker.new(campaign_run)
+  end
+
+  def pixel_tracker
+    @pixel_tracker ||= PixelTracker.new(campaign_run)
   end
 
   def conditional_reconnect

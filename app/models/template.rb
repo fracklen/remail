@@ -7,7 +7,7 @@ class Template < ActiveRecord::Base
   validates :body, presence: true
 
   def example_data
-    JSON.parse(example_recipient)['custom_data']
+    JSON.parse(self.example_recipient)
   rescue
     {}
   end
