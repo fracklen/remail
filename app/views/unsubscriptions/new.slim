@@ -1,0 +1,7 @@
+h1 Please confirm unsubscription
+
+= simple_form_for(:unsubscriptions, url: unsubscriptions_path) do |f|
+  = f.input :uuid, as: :hidden, input_html: { value: @delivery_id }
+  p
+    | I wish to have the mail address #{obfuscate_email(@delivery_data[:email])} unsubscribed.
+  = f.submit 'Confirm'

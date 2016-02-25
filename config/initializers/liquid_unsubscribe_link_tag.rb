@@ -5,12 +5,9 @@ class UnsubscribeLinkTag < Liquid::Tag
   end
 
   def render(context)
-    url = [
-      'http:/',
-      context.registers[:domain],
-      'unsubscribtions',
-      context.registers[:message_id]
-    ].join('/')
+    path = "http://#{context.registers[:domain]}/unsubscriptions/new"
+    params = "unsubscriptions[uuid]=#{context.registers[:message_id]}"
+    url = [path, params].join('?')
     "<a href=\"#{url}\">#{@text}</a>"
   end
 end

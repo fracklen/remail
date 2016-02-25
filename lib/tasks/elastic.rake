@@ -416,6 +416,101 @@ namespace :elastic do
     )
   end
 
+    task :open_events do
+    client.indices.create(
+      index: 'unsubscriptions_v1',
+      body: {
+        settings: {
+          index: {
+            number_of_shards: 91,
+            number_of_replicas: 1
+          }
+        }
+      }
+    ) unless client.indices.exists?(index: 'unsubscriptions_v1')
+
+    client.indices.put_alias(
+      index: 'unsubscriptions_v1',
+      name:  'unsubscriptions'
+    )
+
+    client.indices.put_mapping(
+      index: 'unsubscriptions_v1',
+      type:  'unsubscriber',
+      body: {
+        unsubscriber: {
+          properties: {
+            _rev:       { type: :string },
+
+            created_at: {
+              type: :date,
+              format: :dateOptionalTime
+            },
+
+            message_id: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            recipient_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            recipient_list_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            customer_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            campaign_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            campaign_run_uuid: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            email: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            },
+
+            user_agent: {
+              type: :string
+            },
+            ip: {
+              type: :string,
+              fields: {
+                raw: { type: :string, index: :not_analyzed }
+              }
+            }
+          }
+        }
+      }
+    )
+  end
+
   def client
     @client ||= Elasticsearch::Client.new log: false
   end
