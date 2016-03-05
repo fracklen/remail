@@ -57,13 +57,15 @@ class CampaignRunner
 
   def update_state_end(processed)
     @campaign_run.update_attributes(
-      state: 'FINISHED'
+      state: 'FINISHED',
+      processed: total_recipients
     )
   end
 
   def update_error(e)
     @campaign_run.state      = 'ERROR'
     @campaign_run.last_error = "#{e.message}\n#{e.backtrace.join("\n")}"
+    @campaign_run.save
   end
 
   def mailer

@@ -32,3 +32,5 @@ javascript:
   $('.delete-campaign-link').bind('ajax:complete', function(event, data) {
     $('#campaign-' + data.responseJSON.id).hide();
   });
+
+= react_component 'Campaign', { data: @campaigns }

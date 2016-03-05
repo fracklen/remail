@@ -20,8 +20,12 @@ class RecipientIterator
 
   def process_results
     results = get_next
+    unsubscribed = find_unsubscribed_emails(results)
     @scroll_id = results['_scroll_id']
-    return results['hits']['hits']
+
+    results['hits']['hits'].reject do |hit|
+      unsubscribed[hit['_source']['email']]
+    end
   end
 
   def get_next
@@ -62,13 +66,48 @@ class RecipientIterator
     )
   end
 
+  def find_unsubscribed_emails(elastic_response)
+    emails = elastic_response['hits']['hits'].map do |recipient|
+      recipient['_source']['email']
+    end
+    response = fetch_unsubscriptions(customer.uuid, emails)
+    response['hits']['hits'].inject({}) do |memo, hit|
+      memo[hit['_source']['email']] = true
+      memo
+    end
+  end
+
+  def fetch_unsubscriptions(customer_uuid, emails)
+    client.search(index: 'unsubscriptions',
+      type: 'unsubscriber',
+      body: {
+        query: {
+          bool: {
+            must: [
+              {
+                terms: {
+                  'email.raw' => emails
+                }
+              },
+              {
+                term: {
+                  'customer_uuid.raw' => customer_uuid
+                }
+              }
+            ]
+          }
+        }
+      }
+    )
+  end
+
   def customer
     @customer ||= recipient_list.customer
   end
 
   def client
     return @client if @client
-    @client = ::Elasticsearch::Client.new log: false
+    @client = ::Elasticsearch::Client.new log: true
     @client.transport.reload_connections!
     @client
   end
