@@ -23,6 +23,11 @@ Rails.application.routes.draw do
       end
     end
     resources :campaigns do
+      resources :campaign_stats do
+        collection do
+          get 'delivery_history'
+        end
+      end
       resources :campaign_runs, only: [:create, :destroy] do
         member do
           post 'resume'

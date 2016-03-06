@@ -1,3 +1,7 @@
 h1 = "Campaign: #{@campaign.name}"
 
+h2 Deliveries per day
+= column_chart delivery_history_users_campaign_campaign_stats_path(campaign_id: @campaign.id)
+//
+
 = react_component 'CampaignRuns', { data: @runs, url: users_campaign_path(id: @campaign.id, format: 'json') }

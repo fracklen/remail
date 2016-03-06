@@ -69,6 +69,7 @@ GEM
       timers (>= 4.1.1)
     celluloid-supervision (0.20.5)
       timers (>= 4.1.1)
+    chartkick (1.2.5)
     coffee-rails (4.1.1)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.1.x)
@@ -264,6 +265,7 @@ DEPENDENCIES
   bootstrap-sass
   byebug
   celluloid
+  chartkick (~> 1.2.4)
   coffee-rails (~> 4.1.0)
   delayed_job_active_record
   devise
