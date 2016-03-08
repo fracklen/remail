@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   resources :unsubscriptions, only: [:new, :create]
 
   namespace :users do
+    resources :dashboards, only: [:index]
     resources :recipient_lists
     resources :recipient_list_uploads
     resources :domains

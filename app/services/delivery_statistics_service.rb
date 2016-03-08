@@ -1,8 +1,13 @@
 class DeliveryStatisticsService
-  attr_reader :campaign
+  attr_reader :filters
 
-  def initialize(campaign)
-    @campaign = campaign
+  def initialize
+    @filters = {}
+  end
+
+  def add_filter(key, value)
+    @filters[key] = value
+    self
   end
 
   def fetch()
@@ -10,34 +15,40 @@ class DeliveryStatisticsService
       size: 0,
       index: 'deliveries',
       type: 'delivery',
-      body: query_campaign
+      body: query
     )
   end
 
-  def query_campaign
+  def query
     {
       "aggs" => {
-        "deliveries" => {
-          "filters" => {
-            "filters" => {
-              "campaign" => {
-                "term" => {
-                  "campaign_uuid.raw" => campaign.uuid
-                }
-              }
+        "filtered" => {
+          "filter" => {
+            "bool" => {
+              "must" => format_filters
             }
           },
           "aggs" => {
             "deliveries_over_time" => {
               "date_histogram" => {
                 "field" => "created_at",
-                "interval" => "day"
+                "interval" => "hour"
               }
             }
           }
         }
       }
     }
+  end
+
+  def format_filters
+    @filters.map do |key, value|
+      {
+        "term" => {
+          "#{key}.raw" => value
+        }
+      }
+    end
   end
 
   def client

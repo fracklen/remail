@@ -7,7 +7,7 @@ class Users::CampaignStatsController < CustomerController
 
   def format_stats
     buckets.inject({}) do |memo, bucket|
-      key = bucket.fetch('key_as_string').split('T').first
+      key = bucket.fetch('key_as_string')
       memo[key] = bucket.fetch('doc_count')
       memo
     end
@@ -16,15 +16,13 @@ class Users::CampaignStatsController < CustomerController
   def buckets
     stats
       .fetch('aggregations')
-      .fetch("deliveries")
-      .fetch("buckets")
-      .fetch("campaign")
-      .fetch("deliveries_over_time")
+      .fetch('filtered')
+      .fetch('deliveries_over_time')
       .fetch('buckets')
   end
 
   def stats
-    DeliveryStatisticsService.new(campaign).fetch
+    DeliveryStatisticsService.new.add_filter(:campaign_uuid, campaign.uuid).fetch
   end
 
   def campaign

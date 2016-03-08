@@ -1,0 +1,8 @@
+h1 Dashboard
+
+div.col-12
+  div.col-6
+    = column_chart delivery_history_users_campaign_campaign_stats_path(campaign_id: @customer.campaigns.last.id)
+
+  div.col-6
+    = column_chart delivery_history_users_campaign_campaign_stats_path(campaign_id: @customer.campaigns.first.id)
