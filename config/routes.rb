@@ -23,6 +23,13 @@ Rails.application.routes.draw do
         get 'preview'
       end
     end
+    resources :customer_stats do
+        collection do
+          get 'delivery_history'
+          get 'open_history'
+          get 'click_history'
+        end
+      end
     resources :campaigns do
       resources :campaign_stats do
         collection do

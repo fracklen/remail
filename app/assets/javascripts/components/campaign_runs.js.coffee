@@ -12,7 +12,7 @@
     @replaceState campaign_runs: campaign_runs
 
   componentDidMount: ->
-    @interval = setInterval(@updateCampaignRuns, 2000)
+    @interval = setInterval(@updateCampaignRuns, 10000)
 
   updateCampaignRuns: ->
     $.ajax

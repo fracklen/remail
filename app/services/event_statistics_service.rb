@@ -1,5 +1,5 @@
-class DeliveryStatisticsService
-  attr_reader :filters, :interval, :range
+class EventStatisticsService
+  attr_reader :type, :filters, :interval, :range
 
   def initialize
     @filters = {}
@@ -8,6 +8,12 @@ class DeliveryStatisticsService
       from: 'now-1d/d',
       to:   'now'
     }
+    @type = nil
+  end
+
+  def set_type(type)
+    @type = type
+    self
   end
 
   def add_filter(key, value)
@@ -28,8 +34,8 @@ class DeliveryStatisticsService
   def fetch()
     client.search(
       size: 0,
-      index: 'deliveries',
-      type: 'delivery',
+      index: 'events',
+      type: type,
       body: query
     )
   end
