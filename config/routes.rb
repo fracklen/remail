@@ -1,7 +1,11 @@
+require 'sidekiq/web'
+
 Rails.application.routes.draw do
   devise_for :users
   devise_for :administrators
   root to: 'welcome#index'
+
+  mount Sidekiq::Web => '/sidekiq'
 
   namespace :admin do
     resources :customers
@@ -18,6 +22,7 @@ Rails.application.routes.draw do
     resources :recipient_lists
     resources :recipient_list_uploads
     resources :domains
+    resources :mail_gateways
     resources :templates do
       member do
         get 'preview'

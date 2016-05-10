@@ -4,4 +4,5 @@ class Customer < ActiveRecord::Base
   has_many :domains
   has_many :campaigns
   has_many :templates
+  has_many :mail_gateways
 end

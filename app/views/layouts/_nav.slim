@@ -19,6 +19,7 @@
           li = link_to "Domains", "/users/domains"
           li = link_to "Campaigns", "/users/campaigns"
           li = link_to "Templates", "/users/templates"
+          li = link_to "MailGateways", "/users/mail_gateways"
       ul.nav.navbar-nav.navbar-right.navbar-responsive-collapse
         - if current_administrator
           li = link_to "Sign out", destroy_administrator_session_path, method: 'DELETE'

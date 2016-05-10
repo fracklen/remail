@@ -1,0 +1,5 @@
+.git
+log
+vagrant-elastic-cluster
+tmp
+mock*

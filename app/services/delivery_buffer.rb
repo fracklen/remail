@@ -1,30 +1,23 @@
 class DeliveryBuffer
-  include Celluloid
 
   attr_reader :campaign_run
 
-  BULK_SIZE = 1000
+  BULK_SIZE = 500
 
   def initialize(campaign_run)
     @campaign_run = campaign_run
-    @buffer = []
+    @buffer = {}
   end
 
   def push(recipient_uuid, recipient, mail)
-    @buffer << {
-        index: {
-          _index: 'deliveries',
-          _type: 'delivery',
-          _id: mail.message_id,
-          data: transformed(recipient_uuid, recipient, mail)
-        }
-      }
+    @buffer[mail.message_id] = transformed(recipient_uuid, recipient, mail)
     flush if @buffer.size > BULK_SIZE
   end
 
   def flush
-    client.bulk body: @buffer
-    @buffer.clear
+    ElasticStorageWorker
+      .perform_async('deliveries','delivery', @buffer)
+    @buffer = {}
   end
 
   def transformed(recipient_uuid, recipient, mail)
@@ -50,13 +43,6 @@ class DeliveryBuffer
 
   def campaign
     @campaign ||= campaign_run.campaign
-  end
-
-  def client
-    return @client if @client
-    @client = ::Elasticsearch::Client.new log: true
-    @client.transport.reload_connections!
-    @client
   end
 end
 

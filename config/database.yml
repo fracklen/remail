@@ -13,3 +13,10 @@ development:
 test:
   <<: *default
   database: remail_test
+
+production:
+  adapter: postgresql
+  host: db
+  database: remail_production
+  user: postgres
+  password:

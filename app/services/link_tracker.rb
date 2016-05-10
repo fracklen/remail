@@ -20,15 +20,15 @@ class LinkTracker
     return if link.attributes['href'].value.include?(tracker_cname)
     tracker = generate_link(link.attributes['href'].value)
     link.attributes['href'].value = redirect_link(tracker[:uuid])
-    storage_buffer.async.push(recipient_uuid, msg_id, tracker)
+    storage_buffer.push(recipient_uuid, msg_id, tracker)
   end
 
   def flush
-    storage_buffer.future.flush.value
+    storage_buffer.flush
   end
 
   def finish
-    storage_buffer.terminate
+    storage_buffer.flush
   end
 
   def generate_link(destination)

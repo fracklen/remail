@@ -1,30 +1,23 @@
 class LinkTrackerStorageBuffer
-  include Celluloid
-
   attr_reader :campaign_run
 
-  BULK_SIZE = 1000
+  BULK_SIZE = 500
 
   def initialize(campaign_run)
     @campaign_run = campaign_run
-    @buffer = []
+    @buffer = {}
   end
 
   def push(recipient_uuid, message_id, link)
-    @buffer << {
-        index: {
-          _index: 'trackers',
-          _type: 'link',
-          _id: link.fetch(:uuid),
-          data: transformed(recipient_uuid, message_id, link)
-        }
-      }
-    flush if @buffer.size > BULK_SIZE
+    @buffer[link.fetch(:uuid)] = transformed(recipient_uuid, message_id, link)
+    flush if @buffer.size >= BULK_SIZE
   end
 
   def flush
-    client.bulk(body: @buffer) if @buffer.any?
-    @buffer.clear
+    return unless @buffer.any?
+    ElasticStorageWorker
+      .perform_async('trackers','link', @buffer)
+    @buffer = {}
   rescue => e
     Rails.logger.error(e.message)
     Rails.logger.error(e.backtrace.join("#\n"))
@@ -57,12 +50,5 @@ class LinkTrackerStorageBuffer
 
   def campaign
     @campaign ||= campaign_run.campaign
-  end
-
-  def client
-    return @client if @client
-    @client = ::Elasticsearch::Client.new log: false
-    @client.transport.reload_connections!
-    @client
   end
 end

@@ -4,7 +4,7 @@ require 'csv'
 class RecipientUploadProcessor
   attr_reader :upload, :file, :recipient_list
 
-  BULK_SIZE = 1000
+  BULK_SIZE = 500
 
   class << self
     def process_delayed(upload)
@@ -20,27 +20,20 @@ class RecipientUploadProcessor
 
   def process
     write_file
-
     parse_chunks
-
     delete_file
   end
 
   private
 
-  def push_records(records)
-    bulk = []
+  def queue_records(records)
+    docs = {}
     records.each do |record|
-      bulk << {
-        index: {
-          _index: 'recipients',
-          _type: 'recipient',
-          _id: generate_id(record),
-          data: transformed(record)
-        }
-      }
+      id = generate_id(record)
+      docs[id] = transformed(record)
     end
-    client.bulk body: bulk
+    ElasticStorageWorker
+      .perform_async('recipients','recipient', docs)
   end
 
   def generate_id(record)
@@ -62,11 +55,11 @@ class RecipientUploadProcessor
     CSV.foreach(@file.path, {headers: true, header_converters: :symbol}) do |record|
       records << record
       if records.size > BULK_SIZE
-        push_records(records)
+        queue_records(records)
         records = []
       end
     end
-    push_records(records)
+    queue_records(records)
   end
 
   def write_file
@@ -78,12 +71,5 @@ class RecipientUploadProcessor
 
   def delete_file
     @file.unlink
-  end
-
-  def client
-    return @client if @client
-    @client = ::Elasticsearch::Client.new log: false
-    @client.transport.reload_connections!
-    @client
   end
 end

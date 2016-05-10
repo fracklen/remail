@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160222102005) do
+ActiveRecord::Schema.define(version: 20160510084108) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -112,6 +112,24 @@ ActiveRecord::Schema.define(version: 20160222102005) do
   add_index "domains", ["customer_id", "name", "deleted_at"], name: "index_domains_on_customer_id_and_name_and_deleted_at", unique: true, using: :btree
   add_index "domains", ["customer_id"], name: "index_domains_on_customer_id", using: :btree
 
+  create_table "mail_gateways", force: :cascade do |t|
+    t.integer  "customer_id"
+    t.uuid     "uuid",               default: "uuid_generate_v4()"
+    t.string   "name"
+    t.string   "auth_type"
+    t.text     "connection_options"
+    t.datetime "created_at",                                        null: false
+    t.datetime "updated_at",                                        null: false
+    t.string   "hostname"
+    t.integer  "port"
+    t.string   "hello"
+    t.string   "username"
+    t.string   "password"
+    t.datetime "deleted_at"
+  end
+
+  add_index "mail_gateways", ["customer_id"], name: "index_mail_gateways_on_customer_id", using: :btree
+
   create_table "recipient_list_uploads", force: :cascade do |t|
     t.binary   "csv_data"
     t.integer  "recipient_list_id"
@@ -173,6 +191,7 @@ ActiveRecord::Schema.define(version: 20160222102005) do
   add_foreign_key "campaigns", "recipient_lists"
   add_foreign_key "campaigns", "templates"
   add_foreign_key "domains", "customers"
+  add_foreign_key "mail_gateways", "customers"
   add_foreign_key "recipient_list_uploads", "recipient_lists"
   add_foreign_key "templates", "customers"
 end

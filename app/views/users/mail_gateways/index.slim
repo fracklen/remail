@@ -1,0 +1,29 @@
+h1 Mail Gateways
+
+table.table
+  thead
+    tr
+      th Name
+      th Hostname
+      th Port
+      th Actions
+  tbody
+    - @mail_gateways.each do |mg|
+      tr id="mg-#{mg.id}"
+        td = mg.name
+        td = mg.hostname
+        td = mg.port
+        td
+          = link_to 'Show', users_mail_gateway_path(mg), class: 'btn btn-info'
+          | &nbsp;
+          = link_to 'Destroy', users_mail_gateway_path(mg), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger delete-mg-link', remote: true
+
+
+= will_paginate @mail_gateways
+
+= link_to 'Create Mail Gateway', new_users_mail_gateway_path, class: 'btn btn-large btn-success'
+
+javascript:
+  $('.delete-mg-link').bind('ajax:complete', function(event, data) {
+    $('#mg-' + data.responseJSON.id).hide();
+  });

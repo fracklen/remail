@@ -27,7 +27,7 @@ class PersistentMailer
       mail.smtp_envelope_from,
       mail.smtp_envelope_to
     )
-    delivery_buffer.async.push(id, recipient, mail)
+    delivery_buffer.push(id, recipient, mail)
   rescue IOError, Net::SMTPUnknownError
     @smtp_session = nil
     conditional_reconnect
@@ -68,8 +68,7 @@ class PersistentMailer
   end
 
   def finish
-    delivery_buffer.future.flush.value
-    delivery_buffer.terminate
+    delivery_buffer.flush
     link_tracker.flush
     link_tracker.finish
     @smtp_session.finish if @smtp_session
@@ -105,8 +104,51 @@ class PersistentMailer
   def conditional_reconnect
     if @smtp_session_count > SMTP_SESSION_MAX || @smtp_session.nil?
       @smtp_session.finish if @smtp_session
-      @smtp_session = Net::SMTP.start('localhost', 1025, 'net.test.com')
+      @smtp_session = start_random_session
       @smtp_session_count = 0
     end
+  end
+
+  def start_random_session
+    gateway = pick_random_gateway()
+    case gateway.auth_type
+    when 'plain'
+      start_auth_gateway_session(gateway, :plain)
+    when 'login'
+      start_auth_gateway_session(gateway, :login)
+    else
+      start_simple_gateway_session(gateway)
+    end
+  end
+
+  def start_auth_gateway_session(gateway, type)
+    Net::SMTP.start(
+      gateway.hostname,
+      gateway.port,
+      gateway.hello,
+      gateway.username,
+      gateway.password,
+      type
+    )
+  end
+
+  def start_simple_dateway_session(gateway)
+    Net::SMTP.start(
+      gateway.hostname,
+      gateway.port,
+      gateway.hello
+    )
+  end
+
+  def customer
+    @customer ||= campaign.customer
+  end
+
+  def mail_gateways
+    @mail_gateways ||= customer.mail_gateways
+  end
+
+  def pick_random_gateway
+    mail_gateways.shuffle.first
   end
 end

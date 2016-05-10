@@ -24,6 +24,7 @@ gem 'delayed_job_active_record'
 gem 'elasticsearch'
 gem 'liquid'
 gem 'sidekiq'
+gem 'sinatra', require: false
 gem 'celluloid'
 gem 'react-rails'
 gem 'chartkick', '~> 1.2.4'

@@ -39,10 +39,14 @@ class DeliveryStatisticsService
       "aggs" => {
         "filtered" => {
           "filter" => {
-            "bool" => {
-              "must" => format_filters,
-              "must" => date_range
-            }
+            "bool" => [
+              {
+                "must" => format_filters
+              },
+              {
+                "must" => date_range
+              }
+            ]
           },
           "aggs" => {
             "deliveries_over_time" => {
@@ -80,7 +84,7 @@ class DeliveryStatisticsService
 
   def client
     return @client if @client
-    @client = ::Elasticsearch::Client.new log: true
+    @client = ::Elasticsearch::Client.new log: false
     @client.transport.reload_connections!
     @client
   end

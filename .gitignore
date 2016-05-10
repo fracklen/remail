@@ -18,3 +18,4 @@
 /vagrant-elasticsearch-cluster
 mock.csv
 .powenv
+mock*

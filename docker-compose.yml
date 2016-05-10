@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  remail:
+    image: fracklen/remail
+    ports:
+      - "8080:8080"
+    command: bundle exec unicorn -c ./config/unicorn.rb
+    depends_on:
+      - db
+      - redis
+    environment:
+      - "REDIS_URL=redis://192.168.99.100:6379"
+      - "ELASTICSEARCH_URL=http://192.168.99.100:9200"
+  worker:
+    image: fracklen/remail
+    command: bundle exec sidekiq
+    environment:
+      - "REDIS_URL=redis://192.168.99.100:6379"
+      - "ELASTICSEARCH_URL=http://192.168.99.100:9200"
+    depends_on:
+      - db
+      - redis
+      - mailhog
+  db:
+    image: postgres
+    volumes:
+      - "/opt:/var/lib/postgresql"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+  elasticsearch:
+    image: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
