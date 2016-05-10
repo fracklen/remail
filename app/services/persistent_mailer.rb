@@ -132,7 +132,7 @@ class PersistentMailer
     )
   end
 
-  def start_simple_dateway_session(gateway)
+  def start_simple_gateway_session(gateway)
     Net::SMTP.start(
       gateway.hostname,
       gateway.port,

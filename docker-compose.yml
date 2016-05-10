@@ -11,16 +11,18 @@ services:
       - redis
     environment:
       - "REDIS_URL=redis://192.168.99.100:6379"
-      - "ELASTICSEARCH_URL=http://192.168.99.100:9200"
+      - "ELASTICSEARCH_URL=http://192.168.99.11:9200"
   worker:
     image: fracklen/remail
     command: bundle exec sidekiq
     environment:
       - "REDIS_URL=redis://192.168.99.100:6379"
-      - "ELASTICSEARCH_URL=http://192.168.99.100:9200"
+      - "ELASTICSEARCH_URL=http://192.168.99.11:9200"
     depends_on:
       - db
       - redis
+      - mailhog
+    links:
       - mailhog
   db:
     image: postgres
@@ -35,8 +37,4 @@ services:
     ports:
       - "8025:8025"
       - "1025:1025"
-  elasticsearch:
-    image: elasticsearch
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+
