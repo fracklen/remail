@@ -1,6 +1,9 @@
 require 'sidekiq/web'
 
 Rails.application.routes.draw do
+  namespace :users do
+    resources :gmail_accounts
+  end
   devise_for :users
   devise_for :administrators
   root to: 'welcome#index'
@@ -23,6 +26,7 @@ Rails.application.routes.draw do
     resources :recipient_list_uploads
     resources :domains
     resources :mail_gateways
+    resources :gmail_accounts
     resources :templates do
       member do
         get 'preview'

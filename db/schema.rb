@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160510084108) do
+ActiveRecord::Schema.define(version: 20170915125603) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -112,6 +112,17 @@ ActiveRecord::Schema.define(version: 20160510084108) do
   add_index "domains", ["customer_id", "name", "deleted_at"], name: "index_domains_on_customer_id_and_name_and_deleted_at", unique: true, using: :btree
   add_index "domains", ["customer_id"], name: "index_domains_on_customer_id", using: :btree
 
+  create_table "gmail_accounts", force: :cascade do |t|
+    t.string   "username"
+    t.string   "password"
+    t.integer  "used"
+    t.boolean  "burned"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "gmail_accounts", ["username"], name: "index_gmail_accounts_on_username", using: :btree
+
   create_table "mail_gateways", force: :cascade do |t|
     t.integer  "customer_id"
     t.uuid     "uuid",               default: "uuid_generate_v4()"
@@ -185,6 +196,19 @@ ActiveRecord::Schema.define(version: 20160510084108) do
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
   add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  create_table "users_gmail_accounts", force: :cascade do |t|
+    t.integer  "customer_id"
+    t.string   "username"
+    t.string   "password"
+    t.integer  "sent",        default: 0
+    t.boolean  "burned",      default: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "users_gmail_accounts", ["customer_id"], name: "index_users_gmail_accounts_on_customer_id", using: :btree
+  add_index "users_gmail_accounts", ["username"], name: "index_users_gmail_accounts_on_username", using: :btree
+
   add_foreign_key "campaign_runs", "campaigns"
   add_foreign_key "campaigns", "customers"
   add_foreign_key "campaigns", "domains"
@@ -194,4 +218,5 @@ ActiveRecord::Schema.define(version: 20160510084108) do
   add_foreign_key "mail_gateways", "customers"
   add_foreign_key "recipient_list_uploads", "recipient_lists"
   add_foreign_key "templates", "customers"
+  add_foreign_key "users_gmail_accounts", "customers"
 end

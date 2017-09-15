@@ -1,0 +1,10 @@
+= simple_form_for(@users_gmail_account) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :username
+    = f.input :password
+    = f.input :burned
+
+  .form-actions
+    = f.button :submit

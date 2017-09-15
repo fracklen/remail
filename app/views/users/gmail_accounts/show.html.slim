@@ -1,0 +1,21 @@
+p#notice = notice
+
+p
+  strong Customer:
+  = @users_gmail_account.customer.name
+p
+  strong Username:
+  = @users_gmail_account.username
+p
+  strong Password:
+  = @users_gmail_account.password
+p
+  strong Sent:
+  = @users_gmail_account.sent
+p
+  strong Burned:
+  = @users_gmail_account.burned
+
+= link_to 'Edit', edit_users_gmail_account_path(@users_gmail_account)
+'|
+= link_to 'Back', users_gmail_accounts_path
