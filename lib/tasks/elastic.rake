@@ -1,5 +1,8 @@
 require 'elasticsearch'
 
+NUMBER_OF_SHARDS = ENV['NUMBER_OF_SHARDS'] || 1
+NUMBER_OF_REPLICAS = ENV['NUMBER_OF_REPLICAS'] || 0
+
 namespace :elastic do
   desc "Set up indexes"
   task setup: [
@@ -16,8 +19,8 @@ namespace :elastic do
       body: {
         settings: {
           index: {
-            number_of_shards: 91,
-            number_of_replicas: 1
+            number_of_shards: NUMBER_OF_SHARDS,
+            number_of_replicas: NUMBER_OF_REPLICAS
           }
         }
       }
@@ -72,8 +75,8 @@ namespace :elastic do
       body: {
         settings: {
           index: {
-            number_of_shards: 91,
-            number_of_replicas: 1
+            number_of_shards: NUMBER_OF_SHARDS,
+            number_of_replicas: NUMBER_OF_REPLICAS
           }
         }
       }
@@ -147,8 +150,8 @@ namespace :elastic do
       body: {
         settings: {
           index: {
-            number_of_shards: 91,
-            number_of_replicas: 1
+            number_of_shards: NUMBER_OF_SHARDS,
+            number_of_replicas: NUMBER_OF_REPLICAS
           }
         }
       }
@@ -232,8 +235,8 @@ namespace :elastic do
       body: {
         settings: {
           index: {
-            number_of_shards: 91,
-            number_of_replicas: 1
+            number_of_shards: NUMBER_OF_SHARDS,
+            number_of_replicas: NUMBER_OF_REPLICAS
           }
         }
       }
@@ -327,8 +330,8 @@ namespace :elastic do
       body: {
         settings: {
           index: {
-            number_of_shards: 91,
-            number_of_replicas: 1
+            number_of_shards: NUMBER_OF_SHARDS,
+            number_of_replicas: NUMBER_OF_REPLICAS
           }
         }
       }
@@ -422,8 +425,8 @@ namespace :elastic do
       body: {
         settings: {
           index: {
-            number_of_shards: 91,
-            number_of_replicas: 1
+            number_of_shards: NUMBER_OF_SHARDS,
+            number_of_replicas: NUMBER_OF_REPLICAS
           }
         }
       }
