@@ -25,9 +25,11 @@ class ElasticStorageService
         }
       }
     end
-    res = client.bulk body: bulk,
-      consistency: 'one',
-      replication: 'async'
+    Rails.logger.error("#{bulk.inspect}")
+    return if bulk.empty?
+    res = client.bulk body: bulk #,
+      # consistency: 'one',
+      # replication: 'async'
   end
 
   # Restore timestamps

@@ -40,7 +40,9 @@ class CampaignRunner
 
   def update_state(processed, sent, rejected)
     # Save the database...
-    return unless processed % (total_recipients / 1000) == 0
+    if total_recipients > 1000
+      return unless processed % (total_recipients / 1000) == 0
+    end
 
     @campaign_run.update_attributes(
       processed: processed,
@@ -69,7 +71,7 @@ class CampaignRunner
   end
 
   def mailer
-    @mailer ||= PersistentMailer.new(campaign_run)
+    @mailer ||= GmailMailer.new(campaign_run)
   end
 
   def iterator

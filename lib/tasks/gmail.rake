@@ -10,11 +10,13 @@ namespace :gmail do
     log.info("Logged in: #{gmail.logged_in?}")
 
     email = gmail.compose do
-      to "fmn.adwork@gmail.com"
+      to "medlemsservicebitcoin@gmail.com"
       subject "Vi er flyvende!"
       body "YEAH!!"
     end
     email.deliver!
+
+    log.info("Logged in: #{email}")
 
     gmail.logout
   end

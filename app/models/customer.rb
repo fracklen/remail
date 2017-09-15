@@ -5,4 +5,5 @@ class Customer < ActiveRecord::Base
   has_many :campaigns
   has_many :templates
   has_many :mail_gateways
+  has_many :users_gmail_accounts
 end
