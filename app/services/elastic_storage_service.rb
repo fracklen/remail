@@ -45,7 +45,7 @@ class ElasticStorageService
   def client
     return @client if @client
     @client = ::Elasticsearch::Client.new log: true
-    @client.transport.reload_connections!
+    # @client.transport.reload_connections!
     @client
   end
 

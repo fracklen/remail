@@ -515,7 +515,7 @@ namespace :elastic do
   end
 
   def client
-    @client ||= Elasticsearch::Client.new(host: host, log: false)
+    @client ||= Elasticsearch::Client.new(log: false)
   end
 
   def host
