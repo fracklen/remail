@@ -23,19 +23,9 @@ class GmailMailer
     rendered = pixel_tracker.track_opens(rendered, msg_id)
     mail = create_mail(recipient, rendered, msg_id)
     delivery_buffer.push(id, recipient, mail)
-  rescue IOError, Net::SMTPUnknownError
-    @smtp_session = nil
-    conditional_reconnect
-    deliver(recipient, rendered, !try_again) if try_again
-    raise unless try_again
-  rescue Net::SMTPServerBusy, TimeoutError
-    @smtp_session = nil
-    sleep 1
-    conditional_reconnect
-    deliver(recipient, rendered, !try_again) if try_again
-    raise unless try_again
-  rescue Net::SMTPAuthenticationError
-    raise
+  rescue => exception
+    Raven.capture_exception(exception)
+    raise exception
   end
 
   def create_mail(recipient, rendered, msg_id)
