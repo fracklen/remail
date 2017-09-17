@@ -16,6 +16,31 @@ p
   strong Burned:
   = @users_gmail_account.burned
 
+hr
+
+div.google-authorization
+  - if @service.authorization_url
+    h2 Authorization
+    p
+      |
+        Account access not authorized.
+        Please click the Authorize link,
+        authenticate as the user and authorize
+        Sending Emails as the user.
+
+    p
+      = link_to 'Authorize', @service.authorization_url, target: 'blank', class: 'btn btn-danger'
+
+    # Authorization Code
+    p
+      = form_for @users_gmail_account, url: {action: 'authorize'}, method: 'POST' do |f|
+        = label_tag :code
+        = text_field_tag :code
+        = submit_tag :submit_code
+  - else
+    p.btn.btn-success Authorized OK
+
+
 = link_to 'Edit', edit_users_gmail_account_path(@users_gmail_account)
 '|
 = link_to 'Back', users_gmail_accounts_path

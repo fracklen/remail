@@ -1,12 +1,12 @@
 class GmailMailer
 
   attr_reader :campaign_run
+  attr_reader :service
 
-  SMTP_SESSION_MAX = 1000
+  SMTP_SESSION_MAX = 50
 
   def initialize(campaign_run)
     @campaign_run = campaign_run
-    @smtp_session = nil
     @smtp_session_count = 0
   end
 
@@ -22,6 +22,7 @@ class GmailMailer
     rendered = link_tracker.track_links(rendered, id, msg_id)
     rendered = pixel_tracker.track_opens(rendered, msg_id)
     mail = create_mail(recipient, rendered, msg_id)
+    Rails.logger.info(mail.inspect)
     delivery_buffer.push(id, recipient, mail)
   rescue => exception
     Raven.capture_exception(exception)
@@ -29,14 +30,11 @@ class GmailMailer
   end
 
   def create_mail(recipient, rendered, msg_id)
-    email = @smtp_session.compose do
-      to recipient['email']
-      message_id msg_id
-      subject rendered[:subject]
-      body ActionView::Base.full_sanitizer.sanitize(rendered[:body])
-    end
-    email.deliver!
-    email
+    service.sendmail({
+      to: recipient['email'],
+      subject: rendered[:subject],
+      body: ActionView::Base.full_sanitizer.sanitize(rendered[:body])
+    })
   end
 
   def gen_message_id(recipient)
@@ -78,16 +76,10 @@ class GmailMailer
   end
 
   def conditional_reconnect
-    if @smtp_session_count > SMTP_SESSION_MAX || @smtp_session.nil?
-      @smtp_session.logout if @smtp_session
-      @smtp_session = start_random_session
+    if @smtp_session_count > SMTP_SESSION_MAX || @service.nil?
+      @service = nil
       @smtp_session_count = 0
     end
-  end
-
-  def start_random_session
-    account = pick_random_account()
-    Gmail.connect!(account.username, account.password)
   end
 
   def customer
@@ -99,6 +91,13 @@ class GmailMailer
   end
 
   def pick_random_account
-    gmail_accounts.shuffle.first
+    gmail_accounts
+      .select {|acc| GmailService.new(acc.username).authorization_url.nil? }
+      .shuffle
+      .first
+  end
+
+  def service
+    @service ||= GmailService.new(pick_random_account.username)
   end
 end

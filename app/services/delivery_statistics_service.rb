@@ -26,6 +26,7 @@ class DeliveryStatisticsService
   end
 
   def fetch()
+    Rails.logger.info(query.to_json)
     client.search(
       size: 0,
       index: 'deliveries',
@@ -36,25 +37,16 @@ class DeliveryStatisticsService
 
   def query
     {
+      "query" => {
+        "constant_score" => {
+          "filter" => format_filters
+        }
+      },
       "aggs" => {
-        "filtered" => {
-          "filter" => {
-            "bool" => [
-              {
-                "must" => format_filters
-              },
-              {
-                "must" => date_range
-              }
-            ]
-          },
-          "aggs" => {
-            "deliveries_over_time" => {
-              "date_histogram" => {
-                "field" => "created_at",
-                "interval" => interval
-              }
-            }
+        "deliveries_over_time" => {
+          "date_histogram" => {
+            "field" => "created_at",
+            "interval" => interval
           }
         }
       }
@@ -73,13 +65,15 @@ class DeliveryStatisticsService
   end
 
   def format_filters
-    @filters.map do |key, value|
-      {
+    f = date_range
+    @filters.each do |key, value|
+      f[key] = {
         "term" => {
           "#{key}.raw" => value
         }
       }
     end
+    return f
   end
 
   def client

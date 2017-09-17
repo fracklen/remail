@@ -1,5 +1,5 @@
 class Users::GmailAccountsController < ApplicationController
-  before_action :set_users_gmail_account, only: [:show, :edit, :update, :destroy]
+  before_action :set_users_gmail_account, only: [:show, :edit, :update, :destroy, :authorize]
 
   # GET /users/gmail_accounts
   # GET /users/gmail_accounts.json
@@ -10,11 +10,19 @@ class Users::GmailAccountsController < ApplicationController
   # GET /users/gmail_accounts/1
   # GET /users/gmail_accounts/1.json
   def show
+    @service = GmailService.new(@users_gmail_account.username)
   end
 
   # GET /users/gmail_accounts/new
   def new
     @users_gmail_account = Users::GmailAccount.new
+  end
+
+  def authorize
+    @service = GmailService.new(@users_gmail_account.username)
+    code = params.require(:code)
+    @service.authorize(code)
+    render json: {result: 'OK'}
   end
 
   # GET /users/gmail_accounts/1/edit
