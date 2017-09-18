@@ -8,6 +8,7 @@ table.table
       th Burned
       th
       th
+      th
 
   tbody
     - @users_gmail_accounts.each do |users_gmail_account|
@@ -15,6 +16,7 @@ table.table
         td = users_gmail_account.username
         td = users_gmail_account.sent
         td = users_gmail_account.burned
+        td = link_to 'Show', users_gmail_account_path(users_gmail_account), class: 'btn btn-success'
         td = link_to 'Edit', edit_users_gmail_account_path(users_gmail_account), class: 'btn btn-info'
         td = link_to 'Destroy', users_gmail_account, data: {:confirm => 'Are you sure?'}, :method => :delete, class: 'btn btn-danger'
 
