@@ -10,7 +10,7 @@ class DeliveryBuffer
   end
 
   def push(recipient_uuid, recipient, mail)
-    @buffer[mail.id] = transformed(recipient_uuid, recipient, mail)
+    @buffer[mail.message_id] = transformed(recipient_uuid, recipient, mail)
     flush if @buffer.size > BULK_SIZE
   end
 
