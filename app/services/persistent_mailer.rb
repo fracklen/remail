@@ -113,13 +113,13 @@ class PersistentMailer
 
   def start_random_session
     @gateway = pick_random_gateway()
-    case gateway.auth_type
+    case @gateway.auth_type
     when 'plain'
-      start_auth_gateway_session(gateway, :plain)
+      start_auth_gateway_session(@gateway, :plain)
     when 'login'
-      start_auth_gateway_session(gateway, :login)
+      start_auth_gateway_session(@gateway, :login)
     else
-      start_simple_gateway_session(gateway)
+      start_simple_gateway_session(@gateway)
     end
   end
 
@@ -151,6 +151,7 @@ class PersistentMailer
   end
 
   def store_history
+    return if @gateway.nil?
     MailHistory.create(
       sender: "#{@gateway.username}@#{@gateway.hostname}",
       emails_sent: @smtp_session_count
