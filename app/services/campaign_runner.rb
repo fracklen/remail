@@ -23,6 +23,7 @@ class CampaignRunner
         mailer.send_mail(id, recipient)
         sent += 1
       rescue => e
+        Raven.capture_exception(e)
         Rails.logger.error(e.message)
         Rails.logger.error(e.backtrace.join("\n"))
         rejected += 1
