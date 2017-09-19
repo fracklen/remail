@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170915125603) do
+ActiveRecord::Schema.define(version: 20170919120707) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -140,6 +140,15 @@ ActiveRecord::Schema.define(version: 20170915125603) do
   end
 
   add_index "mail_gateways", ["customer_id"], name: "index_mail_gateways_on_customer_id", using: :btree
+
+  create_table "mail_histories", force: :cascade do |t|
+    t.string   "sender"
+    t.integer  "emails_sent"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "mail_histories", ["sender"], name: "index_mail_histories_on_sender", using: :btree
 
   create_table "recipient_list_uploads", force: :cascade do |t|
     t.binary   "csv_data"

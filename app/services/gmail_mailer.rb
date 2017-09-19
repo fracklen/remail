@@ -42,6 +42,7 @@ class GmailMailer
   end
 
   def finish
+    store_history
     delivery_buffer.flush
     link_tracker.flush
     link_tracker.finish
@@ -77,6 +78,7 @@ class GmailMailer
 
   def conditional_reconnect
     if @smtp_session_count > SMTP_SESSION_MAX || @service.nil?
+      store_history
       @service = nil
       @smtp_session_count = 0
     end
@@ -99,5 +101,15 @@ class GmailMailer
 
   def service
     @service ||= GmailService.new(pick_random_account.username)
+  end
+
+  def store_history
+    account = Users::GmailAccount
+      .where(customer: customer, username: service.user_id)
+
+    MailHistory.create(
+      users_gmail_account: account,
+      mails: @smtp_session_count
+    )
   end
 end

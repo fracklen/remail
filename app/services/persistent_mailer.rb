@@ -68,6 +68,7 @@ class PersistentMailer
   end
 
   def finish
+    store_history
     delivery_buffer.flush
     link_tracker.flush
     link_tracker.finish
@@ -103,6 +104,7 @@ class PersistentMailer
 
   def conditional_reconnect
     if @smtp_session_count > SMTP_SESSION_MAX || @smtp_session.nil?
+      store_history
       @smtp_session.finish if @smtp_session
       @smtp_session = start_random_session
       @smtp_session_count = 0
@@ -110,7 +112,7 @@ class PersistentMailer
   end
 
   def start_random_session
-    gateway = pick_random_gateway()
+    @gateway = pick_random_gateway()
     case gateway.auth_type
     when 'plain'
       start_auth_gateway_session(gateway, :plain)
@@ -146,6 +148,13 @@ class PersistentMailer
 
   def mail_gateways
     @mail_gateways ||= customer.mail_gateways
+  end
+
+  def store_history
+    MailHistory.create(
+      sender: "#{@gateway.username}@#{@gateway.hostname}",
+      emails_sent: @smtp_session_count
+    )
   end
 
   def pick_random_gateway

@@ -71,7 +71,7 @@ class CampaignRunner
   end
 
   def mailer
-    @mailer ||= GmailMailer.new(campaign_run)
+    @mailer ||= PersistentMailer.new(campaign_run)
   end
 
   def iterator
