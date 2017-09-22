@@ -74,6 +74,6 @@ class Users::TemplatesController < CustomerController
   end
 
   def domain
-    current_user.customer.domains.last.name
+    current_user.customer.domains.last.link_hostname
   end
 end

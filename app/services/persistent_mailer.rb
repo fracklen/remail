@@ -78,7 +78,7 @@ class PersistentMailer
   def renderer
     @renderer ||= TemplateRenderer.new(
       campaign_run.campaign.template,
-      campaign_run.campaign.domain.name
+      campaign_run.campaign.domain.link_hostname
     )
   end
 
