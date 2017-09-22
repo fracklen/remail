@@ -12,6 +12,8 @@ table.table
         td
           = link_to 'Show', users_domain_path(domain), class: 'btn btn-info'
           | &nbsp;
+          = link_to 'Edit', edit_users_domain_path(domain), class: 'btn btn-success'
+          | &nbsp;
           = link_to 'Destroy', users_domain_path(domain), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger delete-domain-link', remote: true
 
 

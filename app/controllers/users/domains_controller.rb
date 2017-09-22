@@ -19,6 +19,25 @@ class Users::DomainsController < CustomerController
     end
   end
 
+  def edit
+    @domain = Domain.find(params[:id])
+  end
+
+  # PATCH/PUT /users/domains/1
+  # PATCH/PUT /users/domains/1.json
+  def update
+    @domain = Domain.find(params[:id])
+    respond_to do |format|
+      if @domain.update(domain_params)
+        format.html { redirect_to users_domain_path(@domain), notice: 'Domain was successfully updated.' }
+        format.json { render :show, status: :ok, location: @domain }
+      else
+        format.html { render :edit }
+        format.json { render json: @domain.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   def show
     @domain = Domain.find(params[:id])
   end
@@ -33,7 +52,7 @@ class Users::DomainsController < CustomerController
   private
 
   def domain_params
-    params.require(:domain).permit(:name).merge(customer)
+    params.require(:domain).permit(:name, :link_hostname).merge(customer)
   end
 
   def customer

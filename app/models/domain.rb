@@ -6,6 +6,8 @@ class Domain < ActiveRecord::Base
     scope: [:customer, :deleted_at]
   }
 
+  validates_presence_of :link_hostname
+
   scope :active, -> { where(deleted_at: nil)}
 
 end

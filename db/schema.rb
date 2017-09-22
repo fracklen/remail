@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170919120707) do
+ActiveRecord::Schema.define(version: 20170921082111) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -105,8 +105,9 @@ ActiveRecord::Schema.define(version: 20170919120707) do
     t.integer  "customer_id"
     t.string   "name"
     t.datetime "deleted_at"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.string   "link_hostname"
   end
 
   add_index "domains", ["customer_id", "name", "deleted_at"], name: "index_domains_on_customer_id_and_name_and_deleted_at", unique: true, using: :btree
