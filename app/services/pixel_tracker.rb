@@ -23,7 +23,7 @@ class PixelTracker
   end
 
   def tracker_cname
-    @cname ||= "http://#{campaign.domain.name}"
+    @cname ||= "http://#{campaign.domain.link_hostname}"
   end
 
   def customer_uuid
