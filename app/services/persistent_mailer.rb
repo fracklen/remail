@@ -51,9 +51,11 @@ class PersistentMailer
     mail.subject    = rendered[:subject]
     mail.message_id = msg_id
 
+    plain_text_body = text_mail(rendered[:body])
+
     mail.text_part do
       content_type 'text/plain; charset=UTF-8'
-      body ActionView::Base.full_sanitizer.sanitize(rendered[:body])
+      body plain_text_body
     end
 
     mail.html_part do
@@ -140,6 +142,14 @@ class PersistentMailer
       gateway.port,
       gateway.hello
     )
+  end
+
+  def text_mail(body)
+    doc = Nokogiri::HTML(body)
+    doc.css('a.unsubscribe-link').each do |link|
+      link.content += ' ' + link['href'] + ' '
+    end
+    ActionView::Base.full_sanitizer.sanitize(doc.to_html)
   end
 
   def customer
