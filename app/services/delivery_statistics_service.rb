@@ -37,17 +37,17 @@ class DeliveryStatisticsService
 
   def query
     {
-      "query" => {
-        "constant_score" => {
-          "filter" => format_filters
-        }
-      },
       "aggs" => {
         "deliveries_over_time" => {
           "date_histogram" => {
             "field" => "created_at",
             "interval" => interval
           }
+        }
+      },
+      "query" => {
+        "bool" => {
+          "must" => format_terms + [date_range]
         }
       }
     }
@@ -64,16 +64,24 @@ class DeliveryStatisticsService
     }
   end
 
-  def format_filters
-    f = date_range
-    @filters.each do |key, value|
-      f[key] = {
+  def simple_filter
+    key, value = @filters.first
+    f = {
+      "term" => {
+        "#{key}.raw" => value
+      }
+    }
+    f
+  end
+
+  def format_terms
+    @filters.map do |key, value|
+      {
         "term" => {
           "#{key}.raw" => value
         }
       }
     end
-    return f
   end
 
   def client
