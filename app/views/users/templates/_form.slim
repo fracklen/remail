@@ -1,3 +1,5 @@
+= tinymce_assets
+
 = simple_form_for([:users, @template]) do |f|
   - if @template.errors.any?
     #error_explanation
@@ -10,7 +12,7 @@
 
   = f.input :name
   = f.input :subject
-  = f.input :body, input_html: { style: "height: 600px;" }
+  = f.input :body, input_html: { style: "height: 600px;", class: "tinymce" }
   = f.input :example_recipient
 
 
@@ -19,3 +21,5 @@
   .actions
     = f.submit
 
+
+= tinymce

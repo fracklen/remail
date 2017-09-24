@@ -299,6 +299,8 @@ GEM
     tilt (2.0.2)
     timers (4.1.1)
       hitimes
+    tinymce-rails (4.6.7)
+      railties (>= 3.1.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uber (0.1.0)
@@ -356,6 +358,7 @@ DEPENDENCIES
   slim-rails
   spring
   therubyracer
+  tinymce-rails
   uglifier (>= 1.3.0)
   unicorn
   web-console (~> 2.0)
