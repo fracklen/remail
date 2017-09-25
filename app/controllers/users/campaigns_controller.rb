@@ -22,7 +22,7 @@ class Users::CampaignsController < CustomerController
 
   def show
     @campaign = Campaign.find(params[:id])
-    @runs = @campaign.campaign_runs.visible.order(:id, :state)
+    @runs = @campaign.campaign_runs.visible.order(id: 'DESC')
     respond_to do |format|
       format.html
       format.json do

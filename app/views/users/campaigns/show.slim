@@ -4,4 +4,11 @@ h2 Deliveries per day
 = column_chart delivery_history_users_campaign_campaign_stats_path(campaign_id: @campaign.id)
 //
 
+h2 Opens per day
+= column_chart open_history_users_customer_stats_path(campaign_uuid: @campaign.uuid)
+
+h2 Clicks per day
+= column_chart click_history_users_customer_stats_path(campaign_uuid: @campaign.uuid)
+
+
 = react_component 'CampaignRuns', { data: @runs, url: users_campaign_path(id: @campaign.id, format: 'json') }

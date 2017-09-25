@@ -37,24 +37,39 @@ class Users::CustomerStatsController < CustomerController
   end
 
   def opens
-    EventStatisticsService.new
-      .add_filter(:customer_uuid, customer.uuid)
-      .set_interval('1h')
-      .set_range(from: 'now-1d/d', to: 'now')
+    filtered_events
       .set_type('open')
       .fetch
   end
 
   def clicks
-    EventStatisticsService.new
-      .add_filter(:customer_uuid, customer.uuid)
-      .set_interval('1h')
-      .set_range(from: 'now-1d/d', to: 'now')
+    filtered_events
       .set_type('click')
       .fetch
   end
 
   def customer
     current_user.customer
+  end
+
+  def filtered_events
+    service = event_service
+    if params[:campaign_uuid].present?
+      service.add_filter(:campaign_uuid, params[:campaign_uuid])
+    end
+    if params[:campaign_run_uuid].present?
+      service.add_filter(
+        :campaign_run_uuid,
+        params[:campaign_run_uuid]
+      )
+    end
+    service
+  end
+
+  def event_service
+    @event_service ||= EventStatisticsService.new
+      .add_filter(:customer_uuid, customer.uuid)
+      .set_interval('1h')
+      .set_range(from: 'now-1d/d', to: 'now')
   end
 end
