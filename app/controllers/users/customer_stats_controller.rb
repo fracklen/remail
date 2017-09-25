@@ -24,7 +24,6 @@ class Users::CustomerStatsController < CustomerController
   def buckets(data)
     data
       .fetch('aggregations')
-      .fetch('filtered')
       .fetch('deliveries_over_time')
       .fetch('buckets')
   end

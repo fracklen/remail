@@ -43,21 +43,16 @@ class EventStatisticsService
   def query
     {
       "aggs" => {
-        "filtered" => {
-          "filter" => {
-            "bool" => {
-              "must" => format_filters,
-              "must" => date_range
-            }
-          },
-          "aggs" => {
-            "deliveries_over_time" => {
-              "date_histogram" => {
-                "field" => "created_at",
-                "interval" => interval
-              }
-            }
+        "deliveries_over_time" => {
+          "date_histogram" => {
+            "field" => "created_at",
+            "interval" => interval
           }
+        }
+      },
+      "query" => {
+        "bool" => {
+          "must" => format_terms + [date_range]
         }
       }
     }
@@ -74,7 +69,7 @@ class EventStatisticsService
     }
   end
 
-  def format_filters
+  def format_terms
     @filters.map do |key, value|
       {
         "term" => {
