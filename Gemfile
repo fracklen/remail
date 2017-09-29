@@ -32,6 +32,7 @@ gem 'chartkick', '~> 1.2.4'
 gem 'rack-mini-profiler', require: false
 gem 'puma'
 gem 'sentry-raven'
+gem 'newrelic_rpm'
 
 gem 'gmail'
 gem 'rmail'
