@@ -33,6 +33,8 @@ gem 'rack-mini-profiler', require: false
 gem 'puma'
 gem 'sentry-raven'
 gem 'newrelic_rpm'
+gem 'guard'
+gem 'guard-rspec'
 
 gem 'gmail'
 gem 'rmail'
