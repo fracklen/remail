@@ -1,5 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  let(:customer) { Customer.create(name: 'Spammers Inc.')}
+
+  it 'creates a user' do
+  	User.create!(
+  		name: 'The Spammer',
+  		email: 'spam@spam.dk',
+  		password: 's3cr3t!!',
+  		password_confirmation: 's3cr3t!!',
+  		customer: customer
+		)
+  end
 end

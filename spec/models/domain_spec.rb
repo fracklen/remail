@@ -1,5 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Domain, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+describe Domain, type: :model do
+  let(:customer) { Customer.create(name: "Spammers Inc.") }
+
 end
